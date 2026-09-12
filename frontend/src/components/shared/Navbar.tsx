@@ -32,6 +32,7 @@ export const Navbar: React.FC = () => {
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
   const [isBgmActive, setIsBgmActive] = useState(() => audioEngine.getIsBgmPlaying());
   const [isMuted, setIsMuted] = useState(() => audioEngine.getIsMuted());
+  const [bgmVolume, setBgmVolume] = useState(() => audioEngine.getBgmVolume());
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -43,6 +44,12 @@ export const Navbar: React.FC = () => {
   const handleToggleMute = () => {
     const muted = audioEngine.toggleMute();
     setIsMuted(muted);
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setBgmVolume(val);
+    audioEngine.setBgmVolume(val);
   };
 
   const handleLogout = async () => {
@@ -183,6 +190,23 @@ export const Navbar: React.FC = () => {
               >
                 {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
               </button>
+
+              {/* Volume Slider */}
+              <div className="hidden xl:flex items-center gap-1 pl-1">
+                <input
+                  type="range"
+                  min="0"
+                  max="1.5"
+                  step="0.05"
+                  value={bgmVolume}
+                  onChange={handleVolumeChange}
+                  className="w-16 h-1 bg-[var(--rpg-border)] rounded-lg appearance-none cursor-pointer accent-[var(--rpg-primary)]"
+                  title={`Volume: ${Math.round((bgmVolume / 1) * 100)}%`}
+                />
+                <span className="text-[9px] font-mono text-[var(--rpg-muted)] w-6">
+                  {Math.round((bgmVolume / 1) * 100)}%
+                </span>
+              </div>
             </div>
 
             {/* Theme Selector Dropdown */}

@@ -1,11 +1,12 @@
 /**
  * Life RPG Theme-Adaptive Web Audio Engine
  * Pure Web Audio API: Zero external asset dependencies, zero network latency,
- * perfectly tuned synthetic audio & smooth ambient BGM for Theme A, B, and C.
+ * boosted studio-grade dynamics compression for crisp, rich, and loud playback.
  */
 
 class AudioEngine {
   private ctx: AudioContext | null = null;
+  private compressor: DynamicsCompressorNode | null = null;
   private bgmGain: GainNode | null = null;
   private sfxGain: GainNode | null = null;
   private masterGain: GainNode | null = null;
@@ -18,7 +19,7 @@ class AudioEngine {
   private isBgmPlaying = false;
   private isMuted = false;
   private currentTheme = 'theme-a';
-  private bgmVolumeLevel = 0.25; // Smooth ambient background level
+  private bgmVolumeLevel = 0.65; // Boosted volume
 
   private initContext() {
     if (!this.ctx) {
@@ -26,16 +27,25 @@ class AudioEngine {
       if (AudioCtx) {
         this.ctx = new AudioCtx();
 
+        // Master dynamics compressor to prevent clipping while maximizing loudness & punch
+        this.compressor = this.ctx.createDynamicsCompressor();
+        this.compressor.threshold.setValueAtTime(-14, this.ctx.currentTime);
+        this.compressor.knee.setValueAtTime(30, this.ctx.currentTime);
+        this.compressor.ratio.setValueAtTime(8, this.ctx.currentTime);
+        this.compressor.attack.setValueAtTime(0.003, this.ctx.currentTime);
+        this.compressor.release.setValueAtTime(0.25, this.ctx.currentTime);
+        this.compressor.connect(this.ctx.destination);
+
         this.masterGain = this.ctx.createGain();
-        this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : 1, this.ctx.currentTime);
-        this.masterGain.connect(this.ctx.destination);
+        this.masterGain.gain.setValueAtTime(this.isMuted ? 0 : 1.2, this.ctx.currentTime);
+        this.masterGain.connect(this.compressor);
 
         this.bgmGain = this.ctx.createGain();
         this.bgmGain.gain.setValueAtTime(this.bgmVolumeLevel, this.ctx.currentTime);
         this.bgmGain.connect(this.masterGain);
 
         this.sfxGain = this.ctx.createGain();
-        this.sfxGain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+        this.sfxGain.gain.setValueAtTime(0.85, this.ctx.currentTime); // Louder SFX
         this.sfxGain.connect(this.masterGain);
       }
     }
@@ -47,7 +57,7 @@ class AudioEngine {
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;
     if (this.masterGain && this.ctx) {
-      const target = this.isMuted ? 0 : 1;
+      const target = this.isMuted ? 0 : 1.2;
       this.masterGain.gain.setTargetAtTime(target, this.ctx.currentTime, 0.05);
     }
     return this.isMuted;
@@ -62,10 +72,14 @@ class AudioEngine {
   }
 
   public setBgmVolume(val: number) {
-    this.bgmVolumeLevel = Math.max(0, Math.min(1, val));
+    this.bgmVolumeLevel = Math.max(0, Math.min(1.5, val));
     if (this.bgmGain && this.ctx) {
       this.bgmGain.gain.setTargetAtTime(this.bgmVolumeLevel, this.ctx.currentTime, 0.05);
     }
+  }
+
+  public getBgmVolume(): number {
+    return this.bgmVolumeLevel;
   }
 
   // ==========================================
@@ -95,20 +109,20 @@ class AudioEngine {
     if (themeId === 'theme-a') {
       // ----------------------------------------
       // THEME A: Cyberpunk / Neo-Tokyo Synthwave
-      // Analog-style warm lush detuned pads with slow filter sweep
+      // Boosted analog-style detuned synthwave pads with sweeping resonant filter
       // ----------------------------------------
       const filter = this.ctx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(650, now);
-      filter.Q.setValueAtTime(3, now);
+      filter.frequency.setValueAtTime(850, now);
+      filter.Q.setValueAtTime(4, now);
       filter.connect(this.bgmGain);
       this.bgmFilter = filter;
 
-      // LFO for subtle cyber wave movement
+      // LFO for cyber wave movement
       const lfo = this.ctx.createOscillator();
       const lfoGain = this.ctx.createGain();
-      lfo.frequency.setValueAtTime(0.12, now); // 8-second slow swell
-      lfoGain.gain.setValueAtTime(220, now);
+      lfo.frequency.setValueAtTime(0.15, now);
+      lfoGain.gain.setValueAtTime(320, now);
       lfo.connect(lfoGain);
       lfoGain.connect(filter.frequency);
       lfo.start(now);
@@ -120,8 +134,8 @@ class AudioEngine {
         const osc = this.ctx!.createOscillator();
         const oscGain = this.ctx!.createGain();
         osc.type = idx % 2 === 0 ? 'sawtooth' : 'sine';
-        osc.frequency.setValueAtTime(freq + (idx * 0.35 - 0.7), now); // Detune
-        oscGain.gain.setValueAtTime(0.06 / freqs.length, now);
+        osc.frequency.setValueAtTime(freq + (idx * 0.4 - 0.8), now);
+        oscGain.gain.setValueAtTime(0.24 / freqs.length, now); // Significantly louder
         osc.connect(oscGain);
         oscGain.connect(filter);
         osc.start(now);
@@ -130,20 +144,19 @@ class AudioEngine {
     } else if (themeId === 'theme-b') {
       // ----------------------------------------
       // THEME B: High Fantasy / Medieval Kingdom
-      // Warm acoustic fifths drone with gentle lute/harp resonances
+      // Warm acoustic fifths drone with resonant royal medieval overtones
       // ----------------------------------------
       const filter = this.ctx.createBiquadFilter();
       filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(440, now);
-      filter.Q.setValueAtTime(1.2, now);
+      filter.frequency.setValueAtTime(500, now);
+      filter.Q.setValueAtTime(1.5, now);
       filter.connect(this.bgmGain);
       this.bgmFilter = filter;
 
-      // LFO for warm organic breath
       const lfo = this.ctx.createOscillator();
       const lfoGain = this.ctx.createGain();
-      lfo.frequency.setValueAtTime(0.08, now); // 12-second slow breath
-      lfoGain.gain.setValueAtTime(150, now);
+      lfo.frequency.setValueAtTime(0.1, now);
+      lfoGain.gain.setValueAtTime(200, now);
       lfo.connect(lfoGain);
       lfoGain.connect(filter.frequency);
       lfo.start(now);
@@ -151,12 +164,12 @@ class AudioEngine {
 
       // Royal Celtic / Dorian drone: D2, A2, D3, F#3, A3
       const freqs = [73.42, 110.0, 146.83, 185.0, 220.0];
-      freqs.forEach((freq, idx) => {
+      freqs.forEach((freq) => {
         const osc = this.ctx!.createOscillator();
         const oscGain = this.ctx!.createGain();
-        osc.type = 'triangle'; // Pure, flute & harp-like
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, now);
-        oscGain.gain.setValueAtTime(0.08 / freqs.length, now);
+        oscGain.gain.setValueAtTime(0.32 / freqs.length, now); // Significantly louder
         osc.connect(oscGain);
         oscGain.connect(filter);
         osc.start(now);
@@ -165,19 +178,19 @@ class AudioEngine {
     } else {
       // ----------------------------------------
       // THEME C: Solarpunk / Biophilic Metropolis
-      // Lush crystal glass ambient pad with harmonic overtone shimmer
+      // Lush crystal glass pad with clear harmonic chime resonance
       // ----------------------------------------
       const filter = this.ctx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(800, now);
-      filter.Q.setValueAtTime(0.8, now);
+      filter.frequency.setValueAtTime(950, now);
+      filter.Q.setValueAtTime(1.2, now);
       filter.connect(this.bgmGain);
       this.bgmFilter = filter;
 
       const lfo = this.ctx.createOscillator();
       const lfoGain = this.ctx.createGain();
-      lfo.frequency.setValueAtTime(0.15, now);
-      lfoGain.gain.setValueAtTime(180, now);
+      lfo.frequency.setValueAtTime(0.18, now);
+      lfoGain.gain.setValueAtTime(220, now);
       lfo.connect(lfoGain);
       lfoGain.connect(filter.frequency);
       lfo.start(now);
@@ -188,9 +201,9 @@ class AudioEngine {
       freqs.forEach((freq) => {
         const osc = this.ctx!.createOscillator();
         const oscGain = this.ctx!.createGain();
-        osc.type = 'sine'; // Pure nature sine tones
+        osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, now);
-        oscGain.gain.setValueAtTime(0.07 / freqs.length, now);
+        oscGain.gain.setValueAtTime(0.28 / freqs.length, now); // Significantly louder
         osc.connect(oscGain);
         oscGain.connect(filter);
         osc.start(now);
@@ -201,7 +214,6 @@ class AudioEngine {
 
   public switchTheme(newThemeId: string) {
     if (this.isBgmPlaying && this.currentTheme !== newThemeId) {
-      // Smooth fade out and transition into new theme
       this.startBGM(newThemeId);
     }
   }
@@ -227,7 +239,7 @@ class AudioEngine {
   }
 
   // ==========================================
-  // THEME-ADAPTIVE SOUND EFFECTS (SFX)
+  // THEME-ADAPTIVE SOUND EFFECTS (SFX) - LOUDER
   // ==========================================
 
   public playClick() {
@@ -239,17 +251,17 @@ class AudioEngine {
     const now = this.ctx.currentTime;
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(800, now);
-    osc.frequency.exponentialRampToValueAtTime(400, now + 0.04);
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(440, now + 0.05);
 
-    gain.gain.setValueAtTime(0.15, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    gain.gain.setValueAtTime(0.35, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
     osc.connect(gain);
     gain.connect(this.sfxGain);
 
     osc.start(now);
-    osc.stop(now + 0.05);
+    osc.stop(now + 0.06);
   }
 
   public playQuestComplete(themeId: string) {
@@ -259,7 +271,7 @@ class AudioEngine {
     const now = this.ctx.currentTime;
 
     if (themeId === 'theme-a') {
-      // Cyberpunk: Fast holographic arpeggiated sweep (C5, G5, C6, E6)
+      // Cyberpunk: Loud holographic arpeggiated sweep (C5, G5, C6, E6)
       const notes = [523.25, 783.99, 1046.5, 1318.51];
       notes.forEach((freq, idx) => {
         const osc = this.ctx!.createOscillator();
@@ -269,16 +281,16 @@ class AudioEngine {
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(freq, start);
 
-        gain.gain.setValueAtTime(0.18, start);
-        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.25);
+        gain.gain.setValueAtTime(0.55, start); // Louder
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
 
         osc.connect(gain);
         gain.connect(this.sfxGain!);
         osc.start(start);
-        osc.stop(start + 0.3);
+        osc.stop(start + 0.38);
       });
     } else if (themeId === 'theme-b') {
-      // High Fantasy: Royal heraldic church bell & harp fanfare (D4, A4, D5, F#5)
+      // High Fantasy: Loud cathedral bell & harp fanfare (D4, A4, D5, F#5)
       const notes = [293.66, 440.0, 587.33, 739.99];
       notes.forEach((freq, idx) => {
         const osc = this.ctx!.createOscillator();
@@ -288,16 +300,16 @@ class AudioEngine {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, start);
 
-        gain.gain.setValueAtTime(0.25, start);
-        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.6);
+        gain.gain.setValueAtTime(0.65, start); // Louder
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.7);
 
         osc.connect(gain);
         gain.connect(this.sfxGain!);
         osc.start(start);
-        osc.stop(start + 0.65);
+        osc.stop(start + 0.75);
       });
     } else {
-      // Solarpunk: Warm biophilic resonant crystal chime (G4, C5, E5, G5, B5)
+      // Solarpunk: Loud crystal chime & nature wind shimmer (G4, C5, E5, G5, B5)
       const notes = [392.0, 523.25, 659.25, 783.99, 987.77];
       notes.forEach((freq, idx) => {
         const osc = this.ctx!.createOscillator();
@@ -307,13 +319,13 @@ class AudioEngine {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, start);
 
-        gain.gain.setValueAtTime(0.2, start);
-        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+        gain.gain.setValueAtTime(0.55, start); // Louder
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.6);
 
         osc.connect(gain);
         gain.connect(this.sfxGain!);
         osc.start(start);
-        osc.stop(start + 0.55);
+        osc.stop(start + 0.65);
       });
     }
   }
@@ -323,7 +335,6 @@ class AudioEngine {
     if (!this.ctx || !this.sfxGain || this.isMuted) return;
 
     const now = this.ctx.currentTime;
-    // Triumphant ascending chord progression: C4 -> E4 -> G4 -> C5 -> E5 -> G5
     const notes = [261.63, 329.63, 392.0, 523.25, 659.25, 783.99];
     notes.forEach((freq, idx) => {
       const osc = this.ctx!.createOscillator();
@@ -333,13 +344,13 @@ class AudioEngine {
       osc.type = themeId === 'theme-a' ? 'sawtooth' : themeId === 'theme-b' ? 'triangle' : 'sine';
       osc.frequency.setValueAtTime(freq, start);
 
-      gain.gain.setValueAtTime(0.25, start);
-      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.7);
+      gain.gain.setValueAtTime(0.70, start); // Very triumphant and loud
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.85);
 
       osc.connect(gain);
       gain.connect(this.sfxGain!);
       osc.start(start);
-      osc.stop(start + 0.75);
+      osc.stop(start + 0.9);
     });
   }
 
@@ -348,21 +359,20 @@ class AudioEngine {
     if (!this.ctx || !this.sfxGain || this.isMuted) return;
 
     const now = this.ctx.currentTime;
-    // Low bass impact thud
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
     osc.type = 'triangle';
-    osc.frequency.setValueAtTime(140, now);
-    osc.frequency.exponentialRampToValueAtTime(30, now + 0.25);
+    osc.frequency.setValueAtTime(160, now);
+    osc.frequency.exponentialRampToValueAtTime(25, now + 0.3);
 
-    gain.gain.setValueAtTime(0.35, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    gain.gain.setValueAtTime(0.80, now); // Powerful punchy bass impact
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
 
     osc.connect(gain);
     gain.connect(this.sfxGain);
     osc.start(now);
-    osc.stop(now + 0.35);
+    osc.stop(now + 0.4);
   }
 }
 
