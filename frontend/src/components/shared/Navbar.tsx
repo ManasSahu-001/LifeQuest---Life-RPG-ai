@@ -81,19 +81,19 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[var(--rpg-border)] bg-[var(--rpg-bg)]/90 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="w-full max-w-[1720px] mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="flex items-center justify-between h-16 gap-2">
           {/* Brand / Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 shrink-0">
             <Link to={isAuthenticated ? '/app' : '/'} className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-[var(--rpg-radius)] bg-[var(--rpg-surface)] border border-[var(--rpg-primary)] flex items-center justify-center shadow-[var(--rpg-glow)] transition-transform group-hover:scale-105">
-                <Shield className="w-6 h-6 text-[var(--rpg-primary)]" />
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-[var(--rpg-radius)] bg-[var(--rpg-surface)] border border-[var(--rpg-primary)] flex items-center justify-center shadow-[var(--rpg-glow)] transition-transform group-hover:scale-105 shrink-0">
+                <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--rpg-primary)]" />
               </div>
-              <div>
-                <span className="text-lg font-heading font-black tracking-wider text-[var(--rpg-text)] group-hover:text-[var(--rpg-primary)] transition-colors">
+              <div className="shrink-0">
+                <span className="text-base sm:text-lg font-heading font-black tracking-wider text-[var(--rpg-text)] group-hover:text-[var(--rpg-primary)] transition-colors">
                   LIFE<span className="text-[var(--rpg-primary)]">QUEST</span>
                 </span>
-                <span className="hidden sm:block text-[10px] text-[var(--rpg-muted)] tracking-widest uppercase font-mono">
+                <span className="hidden xl:block text-[9px] text-[var(--rpg-muted)] tracking-widest uppercase font-mono">
                   Productivity RPG
                 </span>
               </div>
@@ -101,7 +101,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Desktop Nav Items */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 min-w-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden mx-1">
             {navLinks.map((link) => {
               const Icon = 'icon' in link ? link.icon : null;
               const isActive = location.pathname === link.path;
@@ -109,24 +109,24 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`px-3 py-2 rounded-[var(--rpg-radius)] text-sm font-medium transition-all flex items-center gap-1.5 ${
+                  className={`px-2 xl:px-2.5 py-1.5 rounded-[var(--rpg-radius)] text-xs xl:text-sm font-medium transition-all flex items-center gap-1 xl:gap-1.5 shrink-0 whitespace-nowrap ${
                     isActive
                       ? 'bg-[var(--rpg-surface)] text-[var(--rpg-primary)] border border-[var(--rpg-border)] shadow-sm'
                       : 'text-[var(--rpg-muted)] hover:text-[var(--rpg-text)] hover:bg-[var(--rpg-surface-hover)]'
                   }`}
                 >
-                  {Icon && <Icon className="w-4 h-4" />}
-                  {link.label}
+                  {Icon && <Icon className="w-3.5 h-3.5 xl:w-4 xl:h-4 shrink-0" />}
+                  <span>{link.label}</span>
                 </Link>
               );
             })}
           </nav>
 
           {/* Right Action Bar */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 xl:gap-3 shrink-0">
             {/* Authenticated RPG Stat Badges */}
             {isAuthenticated && character && (
-              <div className="hidden lg:flex items-center gap-3 bg-[var(--rpg-surface)]/80 border border-[var(--rpg-border)] px-3 py-1.5 rounded-[var(--rpg-radius)]">
+              <div className="hidden xl:flex items-center gap-2 xl:gap-3 bg-[var(--rpg-surface)]/80 border border-[var(--rpg-border)] px-2.5 py-1.5 rounded-[var(--rpg-radius)] shrink-0">
                 {/* Level */}
                 <div className="flex items-center gap-1 text-xs font-mono font-bold text-[var(--rpg-text)]">
                   <span className="text-[var(--rpg-muted)]">LVL</span>
@@ -158,7 +158,7 @@ export const Navbar: React.FC = () => {
             )}
 
             {/* Theme-Adaptive Audio Controls */}
-            <div className="flex items-center gap-1.5 bg-[var(--rpg-surface)] border border-[var(--rpg-border)] p-1 rounded-[var(--rpg-radius)]">
+            <div className="flex items-center gap-1 bg-[var(--rpg-surface)] border border-[var(--rpg-border)] p-1 rounded-[var(--rpg-radius)] shrink-0">
               {/* BGM Toggle */}
               <button
                 onClick={handleToggleBgm}
@@ -195,8 +195,8 @@ export const Navbar: React.FC = () => {
                 {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
               </button>
 
-              {/* Volume Slider */}
-              <div className="hidden sm:flex items-center gap-1.5 pl-1.5 border-l border-[var(--rpg-border)]">
+              {/* Volume Slider - shown on wide screens */}
+              <div className="hidden 2xl:flex items-center gap-1.5 pl-1.5 border-l border-[var(--rpg-border)]">
                 <input
                   type="range"
                   min="0"
@@ -217,26 +217,26 @@ export const Navbar: React.FC = () => {
             {/* Theme Matrix Modal Trigger */}
             <button
               onClick={openThemeSelector}
-              className="p-2 rounded-[var(--rpg-radius)] border border-[var(--rpg-border)] bg-[var(--rpg-surface)] text-[var(--rpg-text)] hover:border-[var(--rpg-primary)] hover:shadow-[var(--rpg-glow)] transition-all flex items-center gap-1.5 text-xs font-mono group"
+              className="p-2 rounded-[var(--rpg-radius)] border border-[var(--rpg-border)] bg-[var(--rpg-surface)] text-[var(--rpg-text)] hover:border-[var(--rpg-primary)] hover:shadow-[var(--rpg-glow)] transition-all flex items-center gap-1.5 text-xs font-mono group shrink-0"
               title="Open Theme Matrix & Level Unlocks"
               aria-label="Open Theme Matrix & Level Unlocks"
             >
               <Palette className="w-4 h-4 text-[var(--rpg-primary)] group-hover:rotate-45 transition-transform" />
-              <span className="hidden sm:inline uppercase">{currentThemeId}</span>
+              <span className="hidden 2xl:inline uppercase">{currentThemeId}</span>
             </button>
 
             {/* Auth Buttons */}
             {isAuthenticated ? (
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-[var(--rpg-radius)] border border-[var(--rpg-border)] text-[var(--rpg-muted)] hover:text-red-400 hover:border-red-400/50 transition-colors"
+                className="p-2 rounded-[var(--rpg-radius)] border border-[var(--rpg-border)] text-[var(--rpg-muted)] hover:text-red-400 hover:border-red-400/50 transition-colors shrink-0"
                 title="Log out"
                 aria-label="Log out"
               >
                 <LogOut className="w-4 h-4" />
               </button>
             ) : (
-              <div className="hidden sm:flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2 shrink-0">
                 <Link to="/login">
                   <Button variant="outline" size="sm">
                     Log In
@@ -253,7 +253,7 @@ export const Navbar: React.FC = () => {
             {/* Mobile menu hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-[var(--rpg-radius)] border border-[var(--rpg-border)] text-[var(--rpg-text)]"
+              className="lg:hidden p-2 rounded-[var(--rpg-radius)] border border-[var(--rpg-border)] text-[var(--rpg-text)] shrink-0"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -269,7 +269,7 @@ export const Navbar: React.FC = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden border-t border-[var(--rpg-border)] bg-[var(--rpg-bg)] px-4 pt-2 pb-4 space-y-1"
+            className="lg:hidden border-t border-[var(--rpg-border)] bg-[var(--rpg-bg)] px-4 pt-2 pb-4 space-y-1"
           >
             {isAuthenticated && character && (
               <div className="flex items-center justify-around bg-[var(--rpg-surface)] border border-[var(--rpg-border)] p-2.5 rounded-[var(--rpg-radius)] mb-2 font-mono text-xs">
