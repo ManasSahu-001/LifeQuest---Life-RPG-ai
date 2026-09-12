@@ -53,16 +53,42 @@ By fusing an **intelligent AI Quest Master**, a **server-authoritative progressi
 
 ## 🔁 1. Core Metagame Loop
 
-```mermaid
-graph TD
-    A[🎯 Real-Life Ambition<br/><i>'Ace DBMS Semester Exam in 2 Weeks'</i>] --> B[🧠 AI Quest Master<br/><i>Procedural / Gemini LLM Synthesis</i>]
-    B --> C[📜 Multi-Phase Quest Chain<br/><i>XP, Gold, Attribute Gains & Boss Damage</i>]
-    C --> D[⚡ Execute Daily Quests<br/><i>Real-Life Habits, Study Sessions & Work</i>]
-    D --> E[🔒 Server-Authoritative Math<br/><i>Atomic ACID Transactions & Streak Multipliers</i>]
-    E --> F[🎉 Level-Up & Treasury Rewards<br/><i>Unlock Attribute Milestones & Relics</i>]
-    F --> G[⚔️ Boss Arena Battles<br/><i>Strike Arch-Specter of Inertia</i>]
-    F --> H[🏙️ Metropolitan City Builder<br/><i>Construct Urban Sectors & Boost Population</i>]
-    F --> I[🌌 Interdimensional Realm Warps<br/><i>Unlock 8 Level-Locked Visual Themes</i>]
+```text
+       ┌────────────────────────────────────────────────────────┐
+       │                 🎯 Real-Life Ambition                  │
+       │     (e.g., "Ace DBMS Semester Exams in 2 Weeks")       │
+       └───────────────────────────┬────────────────────────────┘
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │                  🧠 AI Quest Master                    │
+       │        (Procedural / Gemini LLM Quest Synthesis)       │
+       └───────────────────────────┬────────────────────────────┘
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │                 📜 Dynamic Quest Chain                 │
+       │       (XP, Gold, Attribute Gains & Boss Damage)        │
+       └───────────────────────────┬────────────────────────────┘
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │                 ⚡ Execute Daily Quests                │
+       │       (Real-Life Habits, Coding, & Study Work)         │
+       └───────────────────────────┬────────────────────────────┘
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │                🔒 Server-Authoritative Math            │
+       │       (Atomic ACID Transactions & Streak Bonus)        │
+       └───────────────────────────┬────────────────────────────┘
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │                 🎉 Level-Up & Rewards                  │
+       │        (Unlock Attributes, Badges, & Relics)           │
+       └───────────┬───────────────────┬───────────────────┬────┘
+                   │                   │                   │
+                   ▼                   ▼                   ▼
+       ┌───────────────────────┐ ┌───────────────┐ ┌───────────────┐
+       │  ⚔️ Boss Arena Raid   │ │ 🏙️ Metropolis │ │ 🌌 Realm Warps│
+       │ (Strike Nemesis Boss) │ │(Build Sectors)│ │(Unlock Realms)│
+       └───────────────────────┘ └───────────────┘ └───────────────┘
 ```
 
 ---
