@@ -155,6 +155,57 @@ export const CityCanvasView: React.FC = () => {
         )}
       </div>
 
+      {/* Visual District Status Cards */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-heading font-black text-white flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-emerald-400" />
+            Metropolitan District Overview
+          </h2>
+          <span className="text-xs font-mono text-slate-400">
+            {districtsConfig.length} Specialized Sectors
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {districtsConfig.map((d) => {
+            const DistrictIcon = d.icon;
+            const districtBuildings = cityData?.buildings?.filter(
+              (b: any) => b.district?.toLowerCase() === d.key.toLowerCase()
+            ) || [];
+            const isOperational = districtBuildings.length > 0;
+
+            return (
+              <div
+                key={d.key}
+                className={`p-3 rounded-xl border flex flex-col items-center text-center transition-all ${
+                  isOperational
+                    ? 'bg-slate-900/60 border-emerald-500/40 shadow-sm'
+                    : 'bg-slate-950/40 border-slate-800/80 opacity-70'
+                }`}
+              >
+                <div className={`p-2 rounded-lg bg-white/5 mb-2 ${d.color}`}>
+                  <DistrictIcon className="w-5 h-5" />
+                </div>
+                <h4 className="text-xs font-bold text-slate-200 truncate w-full">{d.label}</h4>
+                <span className="text-[10px] font-mono mt-1 text-slate-400">
+                  {isOperational ? `${districtBuildings.length} Facilities` : 'Undeveloped'}
+                </span>
+                {isOperational ? (
+                  <span className="mt-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-700/60">
+                    ACTIVE
+                  </span>
+                ) : (
+                  <span className="mt-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono text-slate-500 border border-slate-800">
+                    OPEN LOT
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Interactive Districts Construction Catalog */}
       <div className="space-y-4">
         <h2 className="text-lg font-heading font-black text-white flex items-center gap-2">

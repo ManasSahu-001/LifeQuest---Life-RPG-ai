@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext.js';
-import { ShieldAlert, Skull, Flame, Zap, Trophy, HeartPulse } from 'lucide-react';
+import { audioEngine } from '../../services/audioEngine.js';
+import { ShieldAlert, Skull, Flame, Zap, Trophy, HeartPulse, Sparkles, Swords, Activity } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export interface BossEntity {
@@ -29,34 +30,53 @@ export const BossArenaView: React.FC<BossArenaViewProps> = ({
   lastDamage,
 }) => {
   const { currentThemeId } = useTheme();
-  const [animatingDamage, setAnimatingDamage] = useState<number | null>(null);
+  const [animatingDamage, setAnimatingDamage] = useState<{ amount: number; isCrit: boolean } | null>(null);
   const [shake, setShake] = useState(false);
+  const [hitFlash, setHitFlash] = useState(false);
+  const [battleLogs, setBattleLogs] = useState<Array<{ id: string; text: string; damage: number; time: string; isCrit: boolean }>>([]);
 
   const isUpsideDown = currentThemeId === 'theme-h';
   const isHaunted = currentThemeId === 'theme-g';
 
   useEffect(() => {
     if (lastDamage && lastDamage.damageDealt > 0) {
-      setAnimatingDamage(lastDamage.damageDealt);
+      const isCrit = lastDamage.damageDealt >= 75;
+      setAnimatingDamage({ amount: lastDamage.damageDealt, isCrit });
       setShake(true);
+      setHitFlash(true);
+      audioEngine.playAttack();
 
+      const newLog = {
+        id: `${Date.now()}-${Math.random()}`,
+        text: `Hero struck ${boss?.title || 'Nemesis'} with resolute focus!`,
+        damage: lastDamage.damageDealt,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        isCrit,
+      };
+      setBattleLogs((prev) => [newLog, ...prev.slice(0, 4)]);
+
+      const flashTimer = setTimeout(() => setHitFlash(false), 350);
       const timer = setTimeout(() => {
         setAnimatingDamage(null);
         setShake(false);
-      }, 1000);
+      }, 1200);
 
       if (lastDamage.isDefeated) {
+        audioEngine.playLevelUp();
         confetti({
-          particleCount: 80,
-          spread: 70,
+          particleCount: 90,
+          spread: 80,
           origin: { y: 0.6 },
           colors: isUpsideDown ? ['#ff0f3f', '#06b6d4', '#fbbf24'] : ['#10b981', '#a855f7', '#fbbf24'],
         });
       }
 
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(flashTimer);
+        clearTimeout(timer);
+      };
     }
-  }, [lastDamage, isUpsideDown]);
+  }, [lastDamage, isUpsideDown, boss?.title]);
 
   if (!boss) {
     return (
@@ -145,9 +165,14 @@ export const BossArenaView: React.FC<BossArenaViewProps> = ({
 
       {/* Floating Damage Number */}
       {animatingDamage && (
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
-          <span className="text-3xl sm:text-4xl font-black text-yellow-300 drop-shadow-[0_0_12px_rgba(234,179,8,1)] font-mono animate-bounce">
-            -{animatingDamage} HP!
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none flex flex-col items-center animate-bounce">
+          {animatingDamage.isCrit && (
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-red-600 text-white shadow-[0_0_12px_#ef4444] flex items-center gap-1 mb-1 animate-pulse">
+              <Sparkles className="w-3 h-3 text-yellow-300" /> CRITICAL STRIKE!
+            </span>
+          )}
+          <span className="text-3xl sm:text-5xl font-black text-yellow-300 drop-shadow-[0_0_16px_rgba(234,179,8,1)] font-mono">
+            -{animatingDamage.amount} HP!
           </span>
         </div>
       )}
@@ -162,8 +187,12 @@ export const BossArenaView: React.FC<BossArenaViewProps> = ({
       >
         <div className="relative flex flex-col items-center select-none">
           <div
-            className={`relative transition-all duration-300 ${
-              boss.is_defeated ? 'opacity-30 grayscale scale-90' : 'scale-100 hover:scale-105'
+            className={`relative transition-all duration-200 ${
+              boss.is_defeated
+                ? 'opacity-30 grayscale scale-90'
+                : hitFlash
+                ? 'scale-110 filter brightness-200 contrast-200 hue-rotate-180 drop-shadow-[0_0_25px_#ef4444]'
+                : 'scale-100 hover:scale-105'
             }`}
           >
             <svg
@@ -232,6 +261,34 @@ export const BossArenaView: React.FC<BossArenaViewProps> = ({
           </span>
         </div>
       </div>
+
+      {/* Active Battle Log */}
+      {battleLogs.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-white/10 space-y-1.5">
+          <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+            <span className="flex items-center gap-1 text-slate-300">
+              <Activity className="w-3 h-3 text-cyan-400" /> Recent Combat Logs
+            </span>
+            <span className="text-slate-500 font-mono">Live Feed</span>
+          </div>
+          <div className="space-y-1 max-h-24 overflow-y-auto pr-1">
+            {battleLogs.map((log) => (
+              <div
+                key={log.id}
+                className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-black/40 border border-white/5 text-[11px] font-mono"
+              >
+                <span className="text-slate-300 truncate flex items-center gap-1.5">
+                  <Swords className="w-3 h-3 text-amber-400 flex-shrink-0" />
+                  {log.text}
+                </span>
+                <span className="text-amber-400 font-bold flex-shrink-0">
+                  -{log.damage} HP
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

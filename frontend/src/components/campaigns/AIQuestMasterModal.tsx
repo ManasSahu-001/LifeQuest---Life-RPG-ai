@@ -17,7 +17,15 @@ export const AIQuestMasterModal: React.FC<AIQuestMasterModalProps> = ({
 }) => {
   const [goal, setGoal] = useState('');
   const [loading, setLoading] = useState(false);
+  const [forgingStage, setForgingStage] = useState(0);
   const [error, setError] = useState('');
+
+  const forgingMessages = [
+    'Analyzing Real-World Ambition...',
+    'Synthesizing Structured Questline Milestones...',
+    'Balancing XP & Gold Progression Curves...',
+    'Manifesting Dimensional Nemesis Boss Entity...',
+  ];
 
   if (!isOpen) return null;
 
@@ -38,7 +46,12 @@ export const AIQuestMasterModal: React.FC<AIQuestMasterModalProps> = ({
 
     setError('');
     setLoading(true);
+    setForgingStage(0);
     audioEngine.playClick();
+
+    const stageInterval = setInterval(() => {
+      setForgingStage((prev) => (prev + 1) % forgingMessages.length);
+    }, 1600);
 
     try {
       const data = await api.generateCampaign({ goal: goal.trim() });
@@ -58,6 +71,7 @@ export const AIQuestMasterModal: React.FC<AIQuestMasterModalProps> = ({
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'Quest Master was unable to connect. Check backend.');
     } finally {
+      clearInterval(stageInterval);
       setLoading(false);
     }
   };
@@ -121,7 +135,10 @@ export const AIQuestMasterModal: React.FC<AIQuestMasterModalProps> = ({
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => setGoal(q)}
+                  onClick={() => {
+                    audioEngine.playClick();
+                    setGoal(q);
+                  }}
                   disabled={loading}
                   className="px-2.5 py-1 text-[11px] rounded-lg bg-slate-800/80 border border-slate-700 text-slate-300 hover:text-white hover:border-[var(--rpg-primary)] transition-colors"
                 >
@@ -130,6 +147,27 @@ export const AIQuestMasterModal: React.FC<AIQuestMasterModalProps> = ({
               ))}
             </div>
           </div>
+
+          {/* Dynamic Forging Status Indicator */}
+          {loading && (
+            <div className="p-3.5 rounded-xl bg-slate-900/90 border border-[var(--rpg-primary)]/40 shadow-sm animate-pulse space-y-2">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="text-[var(--rpg-primary)] flex items-center gap-2 font-bold">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  {forgingMessages[forgingStage]}
+                </span>
+                <span className="text-slate-400 font-bold">
+                  Step {forgingStage + 1} / {forgingMessages.length}
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[var(--rpg-primary)] via-amber-400 to-[var(--rpg-secondary)] transition-all duration-500 rounded-full"
+                  style={{ width: `${((forgingStage + 1) / forgingMessages.length) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
@@ -149,7 +187,7 @@ export const AIQuestMasterModal: React.FC<AIQuestMasterModalProps> = ({
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Forging Campaign...
+                  Forging Questline...
                 </>
               ) : (
                 <>
