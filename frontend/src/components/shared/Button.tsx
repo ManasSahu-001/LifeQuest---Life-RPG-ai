@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../context/ThemeContext.js';
+import { audioEngine } from '../../services/audioEngine.js';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'outline' | 'gold';
@@ -55,6 +56,13 @@ export const Button: React.FC<ButtonProps> = ({
     }
   };
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    audioEngine.playClick();
+    if (props.onClick) {
+      props.onClick(e);
+    }
+  };
+
   return (
     <motion.button
       whileHover={{ scale: disabled ? 1 : 1.02 }}
@@ -62,6 +70,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled || isLoading}
       className={`inline-flex items-center justify-center rounded-[var(--rpg-radius)] transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--rpg-primary)] ${sizeClasses[size]} ${getVariantStyles()} ${className}`}
       {...props as any}
+      onClick={handleClick}
     >
       {isLoading ? (
         <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />

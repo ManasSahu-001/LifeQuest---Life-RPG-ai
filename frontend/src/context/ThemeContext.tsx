@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { THEMES, DEFAULT_THEME_ID, getTheme, ThemeDefinition } from '../themes/index.js';
 import { api } from '../api/client.js';
+import { audioEngine } from '../services/audioEngine.js';
 
 interface ThemeContextType {
   currentThemeId: string;
@@ -30,6 +31,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCurrentThemeId(themeId);
     document.documentElement.setAttribute('data-theme', themeId);
     localStorage.setItem('liferpg_theme', themeId);
+
+    // Smoothly crossfade theme background audio if playing
+    audioEngine.switchTheme(themeId);
 
     if (persist && localStorage.getItem('liferpg_token')) {
       try {

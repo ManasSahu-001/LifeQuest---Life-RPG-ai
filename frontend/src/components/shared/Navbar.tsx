@@ -16,9 +16,13 @@ import {
   Package,
   LogOut,
   User as UserIcon,
+  Music,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.js';
 import { useTheme } from '../../context/ThemeContext.js';
+import { audioEngine } from '../../services/audioEngine.js';
 import { Button } from './Button.js';
 
 export const Navbar: React.FC = () => {
@@ -26,8 +30,20 @@ export const Navbar: React.FC = () => {
   const { currentThemeId, setThemeId, availableThemes } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+  const [isBgmActive, setIsBgmActive] = useState(() => audioEngine.getIsBgmPlaying());
+  const [isMuted, setIsMuted] = useState(() => audioEngine.getIsMuted());
   const location = useLocation();
   const navigate = useNavigate();
+
+  const handleToggleBgm = () => {
+    const active = audioEngine.toggleBGM(currentThemeId);
+    setIsBgmActive(active);
+  };
+
+  const handleToggleMute = () => {
+    const muted = audioEngine.toggleMute();
+    setIsMuted(muted);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -129,6 +145,45 @@ export const Navbar: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* Theme-Adaptive Audio Controls */}
+            <div className="flex items-center gap-1.5 bg-[var(--rpg-surface)] border border-[var(--rpg-border)] p-1 rounded-[var(--rpg-radius)]">
+              {/* BGM Toggle */}
+              <button
+                onClick={handleToggleBgm}
+                className={`px-2 py-1 rounded text-xs font-mono flex items-center gap-1.5 transition-all ${
+                  isBgmActive
+                    ? 'bg-[var(--rpg-primary)]/20 text-[var(--rpg-primary)] border border-[var(--rpg-primary)]/50 shadow-[0_0_8px_var(--rpg-card-glow)]'
+                    : 'text-[var(--rpg-muted)] hover:text-[var(--rpg-text)]'
+                }`}
+                title={isBgmActive ? 'Ambient BGM: Playing (Click to Pause)' : 'Ambient BGM: Paused (Click to Play)'}
+                aria-label="Toggle ambient theme music"
+              >
+                <Music className={`w-3.5 h-3.5 ${isBgmActive ? 'animate-bounce' : ''}`} />
+                <span className="hidden sm:inline text-[11px] font-bold">
+                  {isBgmActive ? 'BGM ON' : 'BGM'}
+                </span>
+                {isBgmActive && (
+                  <span className="flex items-end gap-0.5 h-3">
+                    <span className="w-0.5 h-2 bg-[var(--rpg-primary)] animate-pulse" />
+                    <span className="w-0.5 h-3 bg-[var(--rpg-primary)] animate-pulse delay-75" />
+                    <span className="w-0.5 h-1.5 bg-[var(--rpg-primary)] animate-pulse delay-150" />
+                  </span>
+                )}
+              </button>
+
+              {/* Master Audio Mute Toggle */}
+              <button
+                onClick={handleToggleMute}
+                className={`p-1 rounded text-xs transition-colors ${
+                  isMuted ? 'text-red-400' : 'text-[var(--rpg-muted)] hover:text-[var(--rpg-text)]'
+                }`}
+                title={isMuted ? 'Unmute All Audio' : 'Mute All Audio'}
+                aria-label={isMuted ? 'Unmute Audio' : 'Mute Audio'}
+              >
+                {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              </button>
+            </div>
 
             {/* Theme Selector Dropdown */}
             <div className="relative">

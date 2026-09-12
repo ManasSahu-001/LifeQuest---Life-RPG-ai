@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useTheme } from '../../context/ThemeContext.js';
+import { audioEngine } from '../../services/audioEngine.js';
 import { Button } from './Button.js';
 
 export interface Quest {
@@ -89,6 +90,9 @@ export const QuestCard: React.FC<QuestCardProps> = ({
     if (quest.is_completed || isCompleting) return;
     setIsCompleting(true);
     try {
+      // Trigger theme-reactive sensory audio chime
+      audioEngine.playQuestComplete(currentThemeId);
+
       // Trigger festive reward celebration confetti
       confetti({
         particleCount: 50,

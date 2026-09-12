@@ -6,6 +6,7 @@ import { useTheme } from '../../context/ThemeContext.js';
 import { useAuth } from '../../context/AuthContext.js';
 import { ProgressBar } from './ProgressBar.js';
 import { Button } from './Button.js';
+import { audioEngine } from '../../services/audioEngine.js';
 
 export interface BossData {
   id: number;
@@ -51,6 +52,7 @@ export const BossCard: React.FC = () => {
   const handleManualStrike = async () => {
     if (!boss || !boss.is_active || isAttacking) return;
     setIsAttacking(true);
+    audioEngine.playBossStrike();
     try {
       const res = await api.attackBoss(25);
       if (res.data.success) {
