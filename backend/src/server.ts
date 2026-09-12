@@ -76,6 +76,29 @@ app.use('/api', apiRouter);
 // Centralized error handling
 app.use(errorHandler);
 
+function initKeepAlive() {
+  const url = process.env.RENDER_EXTERNAL_URL || process.env.SELF_URL;
+  if (!url) return;
+
+  const targetUrl = url.replace(/\/+$/, '') + '/health';
+  const intervalMinutes = parseInt(process.env.KEEP_ALIVE_MINUTES || '8', 10);
+  const intervalMs = intervalMinutes * 60 * 1000;
+
+  console.log(`[KEEP-ALIVE] Auto-pinger enabled for ${targetUrl} (every ${intervalMinutes} min)`);
+  setInterval(async () => {
+    try {
+      const res = await fetch(targetUrl);
+      if (res.ok) {
+        console.log(`[KEEP-ALIVE] Pinged ${targetUrl} - HTTP ${res.status} OK`);
+      } else {
+        console.warn(`[KEEP-ALIVE] Pinged ${targetUrl} - HTTP ${res.status}`);
+      }
+    } catch (err: any) {
+      console.warn(`[KEEP-ALIVE] Ping failed for ${targetUrl}:`, err.message);
+    }
+  }, intervalMs);
+}
+
 export async function startServer() {
   try {
     console.log('[SERVER] Initializing Life RPG Core Backend...');
@@ -84,6 +107,7 @@ export async function startServer() {
 
     const server = app.listen(config.port, () => {
       console.log(`[SERVER] Life RPG backend running on http://localhost:${config.port}`);
+      initKeepAlive();
     });
 
     return { app, server };
