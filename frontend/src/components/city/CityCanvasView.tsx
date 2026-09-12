@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../api/client.js';
 import { audioEngine } from '../../services/audioEngine.js';
 import { useAuth } from '../../context/AuthContext.js';
+import { useToast } from '../../context/ToastContext.js';
 import {
   Building2,
   Users,
@@ -23,6 +24,7 @@ import confetti from 'canvas-confetti';
 
 export const CityCanvasView: React.FC = () => {
   const { character, refreshCharacter } = useAuth();
+  const { showToast } = useToast();
   const [cityData, setCityData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [constructingKey, setConstructingKey] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export const CityCanvasView: React.FC = () => {
 
   const fetchCity = async () => {
     try {
-      const res = await api.get('/api/city');
+      const res = await api.getCity();
       if (res.data?.success) {
         setCityData(res.data);
       }
@@ -50,7 +52,7 @@ export const CityCanvasView: React.FC = () => {
     audioEngine.playClick();
 
     try {
-      const res = await api.post('/api/city/construct', { buildingKey });
+      const res = await api.constructBuilding(buildingKey);
       if (res.data?.success) {
         audioEngine.playLevelUp();
         confetti({
@@ -59,12 +61,13 @@ export const CityCanvasView: React.FC = () => {
           origin: { y: 0.7 },
         });
         setMessage(res.data.message);
+        showToast(res.data.message || 'District upgraded!', 'success');
         if (refreshCharacter) refreshCharacter();
         fetchCity();
         setTimeout(() => setMessage(''), 4000);
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || err.message || 'Construction failed.');
+      showToast(err.response?.data?.message || err.message || 'Construction failed.', 'error');
     } finally {
       setConstructingKey(null);
     }

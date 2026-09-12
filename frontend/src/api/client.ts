@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const rawBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = rawBaseUrl.replace(/\/+$/, '');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -9,12 +10,16 @@ export const apiClient = axios.create({
   },
 });
 
-// Request interceptor: attach token
+// Request interceptor: attach token & normalize URL path
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('liferpg_token');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Prevent double /api prefix if baseURL already contains /api
+    if (config.url && API_BASE_URL.endsWith('/api') && config.url.startsWith('/api/')) {
+      config.url = config.url.substring(4);
     }
     return config;
   },
@@ -86,8 +91,25 @@ export const api = {
   getBoss: (theme?: string) => apiClient.get('/boss', { params: theme ? { theme } : undefined }),
   attackBoss: (damage?: number, bossId?: number) => apiClient.post('/boss/attack', { damage, bossId }),
 
-
   // Skill Tree
   getSkills: () => apiClient.get('/skills'),
   unlockSkill: (skillId: number) => apiClient.post(`/skills/${skillId}/unlock`),
+
+  // Campaigns & AI Quest Master
+  getCampaigns: () => apiClient.get('/campaigns'),
+  getActiveBoss: () => apiClient.get('/campaigns/active-boss'),
+  generateCampaign: (data: { goal: string; title?: string }) =>
+    apiClient.post('/campaigns/generate', data),
+
+  // City Builder
+  getCity: () => apiClient.get('/city'),
+  constructBuilding: (buildingKey: string) =>
+    apiClient.post('/city/construct', { buildingKey }),
+
+  // Economy & Treasury
+  getEconomy: () => apiClient.get('/economy'),
+  purchaseEconomyItem: (itemKey: string) =>
+    apiClient.post('/economy/purchase', { itemKey }),
+  equipEconomyItem: (itemKey: string) =>
+    apiClient.post('/economy/equip', { itemKey }),
 };

@@ -7,10 +7,20 @@ import {
   Zap,
   Coins,
   Crown,
+  Compass,
+  Trophy,
   X,
 } from 'lucide-react';
 
-export type ToastType = 'success' | 'error' | 'info' | 'reward' | 'levelup';
+export type ToastType =
+  | 'success'
+  | 'error'
+  | 'info'
+  | 'reward'
+  | 'levelup'
+  | 'realm'
+  | 'xp'
+  | 'achievement';
 
 export interface ToastItem {
   id: string;
@@ -23,7 +33,13 @@ export interface ToastItem {
 }
 
 interface ToastContextType {
-  showToast: (toast: Omit<ToastItem, 'id'>) => void;
+  showToast: (
+    toastOrMessage: Omit<ToastItem, 'id'> | string,
+    type?: ToastType,
+    xp?: number,
+    gold?: number,
+    title?: string
+  ) => void;
   success: (message: string, title?: string) => void;
   error: (message: string, title?: string) => void;
   info: (message: string, title?: string) => void;
@@ -42,7 +58,26 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const showToast = useCallback(
-    (toast: Omit<ToastItem, 'id'>) => {
+    (
+      toastOrMessage: Omit<ToastItem, 'id'> | string,
+      type?: ToastType,
+      xp?: number,
+      gold?: number,
+      title?: string
+    ) => {
+      let toast: Omit<ToastItem, 'id'>;
+      if (typeof toastOrMessage === 'string') {
+        toast = {
+          message: toastOrMessage,
+          type: type || 'info',
+          xp,
+          gold,
+          title,
+        };
+      } else {
+        toast = toastOrMessage;
+      }
+
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
       const newToast: ToastItem = { ...toast, id };
 
@@ -129,8 +164,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     ? 'rgba(239, 68, 68, 0.5)'
                     : toast.type === 'levelup'
                     ? 'rgba(245, 158, 11, 0.7)'
-                    : toast.type === 'reward'
+                    : toast.type === 'reward' || toast.type === 'xp'
                     ? 'rgba(6, 182, 212, 0.6)'
+                    : toast.type === 'realm'
+                    ? 'rgba(168, 85, 247, 0.6)'
+                    : toast.type === 'achievement'
+                    ? 'rgba(234, 179, 8, 0.6)'
                     : undefined,
               }}
             >
@@ -143,8 +182,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     ? 'bg-emerald-400'
                     : toast.type === 'levelup'
                     ? 'bg-gradient-to-b from-amber-400 to-yellow-500'
-                    : toast.type === 'reward'
+                    : toast.type === 'reward' || toast.type === 'xp'
                     ? 'bg-gradient-to-b from-cyan-400 to-blue-500'
+                    : toast.type === 'realm'
+                    ? 'bg-gradient-to-b from-purple-400 to-fuchsia-500'
+                    : toast.type === 'achievement'
+                    ? 'bg-gradient-to-b from-amber-400 to-yellow-500'
                     : 'bg-[var(--rpg-primary)]'
                 }`}
               />
@@ -160,11 +203,17 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 {toast.type === 'info' && (
                   <Info className="w-5 h-5 text-[var(--rpg-primary)]" />
                 )}
-                {toast.type === 'reward' && (
+                {(toast.type === 'reward' || toast.type === 'xp') && (
                   <Zap className="w-5 h-5 text-cyan-400 animate-pulse" />
                 )}
                 {toast.type === 'levelup' && (
                   <Crown className="w-5 h-5 text-amber-400 animate-bounce" />
+                )}
+                {toast.type === 'realm' && (
+                  <Compass className="w-5 h-5 text-purple-400" />
+                )}
+                {toast.type === 'achievement' && (
+                  <Trophy className="w-5 h-5 text-amber-400 animate-bounce" />
                 )}
               </div>
 
@@ -175,10 +224,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     className={`text-xs font-heading font-black tracking-wide uppercase ${
                       toast.type === 'error'
                         ? 'text-rose-300'
-                        : toast.type === 'levelup'
+                        : toast.type === 'levelup' || toast.type === 'achievement'
                         ? 'text-amber-300'
-                        : toast.type === 'reward'
+                        : toast.type === 'reward' || toast.type === 'xp'
                         ? 'text-cyan-300'
+                        : toast.type === 'realm'
+                        ? 'text-purple-300'
                         : 'text-[var(--rpg-text)]'
                     }`}
                   >
@@ -189,8 +240,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                   {toast.message}
                 </p>
 
-                {/* Reward Badges if reward type */}
-                {toast.type === 'reward' && (toast.xp || toast.gold) && (
+                {/* Reward Badges if reward or xp type */}
+                {(toast.type === 'reward' || toast.type === 'xp') && (toast.xp || toast.gold) && (
                   <div className="flex items-center gap-2 mt-2 font-mono text-[11px]">
                     {toast.xp && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-cyan-950/70 border border-cyan-800 text-cyan-300 font-bold">

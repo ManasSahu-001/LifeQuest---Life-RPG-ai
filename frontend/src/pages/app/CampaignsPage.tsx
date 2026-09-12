@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.js';
+import { useToast } from '../../context/ToastContext.js';
 import { audioEngine } from '../../services/audioEngine.js';
 import { AIQuestMasterModal } from '../../components/campaigns/AIQuestMasterModal.js';
 import { BossArenaView } from '../../components/campaigns/BossArenaView.js';
@@ -21,6 +22,7 @@ import confetti from 'canvas-confetti';
 
 export const CampaignsPage: React.FC = () => {
   const { character, refreshCharacter } = useAuth();
+  const { showToast } = useToast();
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [activeBoss, setActiveBoss] = useState<any>(null);
   const [campaignQuests, setCampaignQuests] = useState<any[]>([]);
@@ -32,9 +34,9 @@ export const CampaignsPage: React.FC = () => {
   const fetchData = async () => {
     try {
       const [cRes, bRes, qRes] = await Promise.all([
-        api.get('/api/campaigns'),
-        api.get('/api/campaigns/active-boss'),
-        api.get('/api/quests?status=active'),
+        api.getCampaigns(),
+        api.getActiveBoss(),
+        api.getQuests({ status: 'active' }),
       ]);
 
       if (cRes.data?.success) setCampaigns(cRes.data.campaigns || []);
@@ -57,6 +59,7 @@ export const CampaignsPage: React.FC = () => {
   }, []);
 
   const handleCampaignForged = (newCampaignData: any) => {
+    showToast('AI Quest Master generated new campaign questline!', 'achievement', undefined, undefined, 'Campaign Forged');
     fetchData();
     if (refreshCharacter) refreshCharacter();
   };
@@ -66,7 +69,7 @@ export const CampaignsPage: React.FC = () => {
     audioEngine.playAttack();
 
     try {
-      const res = await api.post(`/api/quests/${questId}/complete`);
+      const res = await api.completeQuest(questId);
       if (res.data?.success) {
         audioEngine.playLevelUp();
         if (res.data.campaignBossDamage) {
@@ -81,11 +84,21 @@ export const CampaignsPage: React.FC = () => {
           origin: { y: 0.6 },
         });
 
+        showToast(
+          res.data.campaignBossDamage?.isDefeated
+            ? 'Nemesis Boss Defeated! The realm is liberated!'
+            : `Quest Cleared! Dealt ${res.data.campaignBossDamage?.damageDealt || 75} DMG to Boss!`,
+          'xp',
+          res.data.earnedXP || 75,
+          res.data.earnedGold || 50,
+          res.data.campaignBossDamage?.isDefeated ? 'Boss Vanquished' : 'Boss Struck'
+        );
+
         if (refreshCharacter) refreshCharacter();
         fetchData();
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || err.message || 'Quest completion failed.');
+      showToast(err.response?.data?.error || err.message || 'Quest completion failed.', 'error');
     } finally {
       setCompletingQuestId(null);
     }

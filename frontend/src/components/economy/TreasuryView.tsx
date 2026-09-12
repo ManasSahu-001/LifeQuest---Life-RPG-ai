@@ -3,6 +3,7 @@ import { api } from '../../api/client.js';
 import { audioEngine } from '../../services/audioEngine.js';
 import { useAuth } from '../../context/AuthContext.js';
 import { useTheme } from '../../context/ThemeContext.js';
+import { useToast } from '../../context/ToastContext.js';
 import {
   Coins,
   Shield,
@@ -21,6 +22,7 @@ import confetti from 'canvas-confetti';
 export const TreasuryView: React.FC = () => {
   const { character, refreshCharacter } = useAuth();
   const { currentThemeId, switchTheme } = useTheme();
+  const { showToast } = useToast();
   const [shopData, setShopData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [purchasingKey, setPurchasingKey] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export const TreasuryView: React.FC = () => {
 
   const fetchShop = async () => {
     try {
-      const res = await api.get('/api/economy');
+      const res = await api.getEconomy();
       if (res.data?.success) {
         setShopData(res.data);
       }
@@ -49,7 +51,7 @@ export const TreasuryView: React.FC = () => {
     audioEngine.playClick();
 
     try {
-      const res = await api.post('/api/economy/purchase', { itemKey });
+      const res = await api.purchaseEconomyItem(itemKey);
       if (res.data?.success) {
         audioEngine.playLevelUp();
         confetti({
@@ -58,12 +60,13 @@ export const TreasuryView: React.FC = () => {
           origin: { y: 0.6 },
         });
         setMessage(res.data.message);
+        showToast(res.data.message || 'Item acquired!', 'success');
         if (refreshCharacter) refreshCharacter();
         fetchShop();
         setTimeout(() => setMessage(''), 4000);
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || err.message || 'Purchase failed.');
+      showToast(err.response?.data?.message || err.message || 'Purchase failed.', 'error');
     } finally {
       setPurchasingKey(null);
     }
@@ -78,15 +81,17 @@ export const TreasuryView: React.FC = () => {
       try {
         await switchTheme(item.themeId);
         setMessage(`Realm activated: ${item.name}!`);
+        showToast(`Realm activated: ${item.name}!`, 'realm');
         setTimeout(() => setMessage(''), 4000);
       } catch (err: any) {
-        alert(err.message || 'Theme switch failed.');
+        showToast(err.message || 'Theme switch failed.', 'error');
       }
     }
 
     try {
-      const res = await api.post('/api/economy/equip', { itemKey: item.key });
+      const res = await api.equipEconomyItem(item.key);
       if (res.data?.success) {
+        showToast(`Equipped ${item.name}`, 'info');
         fetchShop();
       }
     } catch (err) {

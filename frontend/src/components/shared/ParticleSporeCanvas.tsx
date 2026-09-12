@@ -34,7 +34,10 @@ export const ParticleSporeCanvas: React.FC = () => {
       angle: Math.random() * Math.PI * 2,
     }));
 
+    let isRunning = true;
+
     const render = () => {
+      if (!isRunning) return;
       ctx.clearRect(0, 0, width, height);
 
       particles.forEach((p) => {
@@ -60,12 +63,15 @@ export const ParticleSporeCanvas: React.FC = () => {
         ctx.fill();
       });
 
-      animationFrameId = requestAnimationFrame(render);
+      if (isRunning) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
 
     render();
 
     return () => {
+      isRunning = false;
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };

@@ -127,26 +127,38 @@ export const SignupPage: React.FC = () => {
                 <Palette className="w-3.5 h-3.5 text-[var(--rpg-primary)]" />
                 Select Visual Identity
               </label>
-              <div className="grid grid-cols-3 gap-2">
-                {availableThemes.map((t) => (
-                  <button
-                    type="button"
-                    key={t.id}
-                    onClick={() => setSelectedTheme(t.id)}
-                    className={`p-2.5 rounded-[var(--rpg-radius)] border text-left transition-all ${
-                      selectedTheme === t.id
-                        ? 'border-[var(--rpg-primary)] bg-[var(--rpg-primary)]/10 shadow-sm'
-                        : 'border-[var(--rpg-border)] bg-[var(--rpg-bg)] hover:border-[var(--rpg-muted)]'
-                    }`}
-                  >
-                    <div className="text-[11px] font-bold text-[var(--rpg-text)] truncate">
-                      {t.name}
-                    </div>
-                    <div className="text-[9px] font-mono text-[var(--rpg-muted)] truncate">
-                      {t.badge}
-                    </div>
-                  </button>
-                ))}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {availableThemes.map((t) => {
+                  const isLocked = (t.requiredLevel ?? 1) > 1;
+                  const isSelected = selectedTheme === t.id;
+
+                  return (
+                    <button
+                      type="button"
+                      key={t.id}
+                      disabled={isLocked}
+                      onClick={() => !isLocked && setSelectedTheme(t.id)}
+                      title={isLocked ? `Unlocks at Level ${t.requiredLevel}` : t.subtitle}
+                      className={`p-2.5 rounded-[var(--rpg-radius)] border text-left transition-all ${
+                        isLocked
+                          ? 'opacity-40 border-slate-800 bg-slate-900/40 cursor-not-allowed'
+                          : isSelected
+                          ? 'border-[var(--rpg-primary)] bg-[var(--rpg-primary)]/15 shadow-sm ring-1 ring-[var(--rpg-primary)]/40 cursor-pointer'
+                          : 'border-[var(--rpg-border)] bg-[var(--rpg-bg)] hover:border-[var(--rpg-muted)] cursor-pointer'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-1">
+                        <span className={`text-[11px] font-bold truncate ${isLocked ? 'text-slate-500' : 'text-[var(--rpg-text)]'}`}>
+                          {t.name}
+                        </span>
+                        {isLocked && <Lock className="w-3 h-3 text-slate-500 flex-shrink-0" />}
+                      </div>
+                      <div className="text-[9px] font-mono text-[var(--rpg-muted)] truncate">
+                        {isLocked ? `Lvl ${t.requiredLevel} Realm` : t.badge}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -41,7 +41,7 @@ export const AIQuestMasterModal: React.FC<AIQuestMasterModalProps> = ({
     audioEngine.playClick();
 
     try {
-      const data = await api.post('/api/campaigns/generate', { goal: goal.trim() });
+      const data = await api.generateCampaign({ goal: goal.trim() });
       if (data.data?.success) {
         audioEngine.playLevelUp();
         confetti({

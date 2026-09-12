@@ -16,7 +16,6 @@ interface Particle {
 }
 
 export const ParticleCanvas: React.FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { currentThemeId } = useTheme();
 
   if (currentThemeId === 'theme-g') {
@@ -26,11 +25,19 @@ export const ParticleCanvas: React.FC = () => {
     return <ParticleSporeCanvas />;
   }
 
+  return <StandardParticleCanvas currentThemeId={currentThemeId} />;
+};
+
+const StandardParticleCanvas: React.FC<{ currentThemeId: string }> = ({ currentThemeId }) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    let isRunning = true;
 
     let animationFrameId: number;
     let width = (canvas.width = window.innerWidth);
@@ -138,12 +145,15 @@ export const ParticleCanvas: React.FC = () => {
         ctx.restore();
       });
 
-      animationFrameId = requestAnimationFrame(render);
+      if (isRunning) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
 
     render();
 
     return () => {
+      isRunning = false;
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
     };

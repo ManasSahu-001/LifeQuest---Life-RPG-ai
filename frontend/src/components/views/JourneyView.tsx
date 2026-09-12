@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../context/ThemeContext.js';
 import { useAuth } from '../../context/AuthContext.js';
+import { useToast } from '../../context/ToastContext.js';
 import { WalkingHeroSprite } from '../character/WalkingHeroSprite.js';
 import { Modal } from '../shared/Modal.js';
 import { audioEngine } from '../../services/audioEngine.js';
@@ -26,6 +27,7 @@ import { motion } from 'framer-motion';
 export const JourneyView: React.FC = () => {
   const { currentThemeId, switchTheme } = useTheme();
   const { character } = useAuth();
+  const { showToast } = useToast();
   const [selectedWaypoint, setSelectedWaypoint] = useState<any>(null);
 
   const currentLevel = character?.level || 1;
@@ -126,9 +128,10 @@ export const JourneyView: React.FC = () => {
     try {
       await switchTheme(themeId);
       audioEngine.playLevelUp();
+      showToast('Realm warp complete! Welcome to your new domain.', 'realm');
       setSelectedWaypoint(null);
     } catch (err: any) {
-      alert(err.message || 'Failed to travel to realm.');
+      showToast(err.message || 'Failed to travel to realm.', 'error');
     }
   };
 

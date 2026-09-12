@@ -15,10 +15,12 @@ import {
 import confetti from 'canvas-confetti';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.js';
+import { useToast } from '../../context/ToastContext.js';
 import { Button } from '../../components/shared/Button.js';
 
 export const InventoryPage: React.FC = () => {
   const { character, refreshCharacter } = useAuth();
+  const { showToast } = useToast();
   const [shopRewards, setShopRewards] = useState<any[]>([]);
   const [inventory, setInventory] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -63,7 +65,7 @@ export const InventoryPage: React.FC = () => {
 
   const handlePurchase = async (reward: any) => {
     if ((character?.gold || 0) < reward.cost_gold) {
-      alert(`Insufficient gold! You need ${reward.cost_gold} Gold but only have ${character?.gold || 0}.`);
+      showToast(`Insufficient gold! You need ${reward.cost_gold} Gold but only have ${character?.gold || 0}.`, 'error');
       return;
     }
 
@@ -78,12 +80,13 @@ export const InventoryPage: React.FC = () => {
           colors: ['#ffe600', '#f59e0b', '#d4af37'],
         });
         setMessage(`🎉 Purchased "${reward.title}"! Added to your inventory.`);
+        showToast(`Purchased "${reward.title}"! Added to your inventory.`, 'success');
         await fetchRewards();
         await refreshCharacter();
         setTimeout(() => setMessage(null), 4000);
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Purchase failed');
+      showToast(err.response?.data?.error || 'Purchase failed', 'error');
     } finally {
       setPurchasingId(null);
     }
@@ -95,11 +98,12 @@ export const InventoryPage: React.FC = () => {
       const res = await api.claimReward(userRewardId);
       if (res.data.success) {
         setMessage('✅ Reward marked as enjoyed/claimed!');
+        showToast('Reward marked as enjoyed/claimed!', 'success');
         await fetchRewards();
         setTimeout(() => setMessage(null), 3000);
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to claim reward');
+      showToast(err.response?.data?.error || 'Failed to claim reward', 'error');
     } finally {
       setClaimingId(null);
     }

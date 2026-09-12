@@ -13,6 +13,7 @@ import {
   Check,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.js';
+import { useToast } from '../../context/ToastContext.js';
 import { api } from '../../api/client.js';
 import { ProgressBar } from '../../components/shared/ProgressBar.js';
 import { SkillTree } from '../../components/shared/SkillTree.js';
@@ -21,6 +22,7 @@ import { CharacterStage } from '../../components/character/CharacterStage.js';
 
 export const CharacterPage: React.FC = () => {
   const { character, refreshCharacter, updateCharacterState } = useAuth();
+  const { showToast } = useToast();
   const [isEditingName, setIsEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(character?.name || 'Hero');
   const [titleInput, setTitleInput] = useState(character?.title || 'Novice Adventurer');
@@ -45,9 +47,10 @@ export const CharacterPage: React.FC = () => {
       if (res.data.success) {
         updateCharacterState(res.data.character);
         setIsEditingName(false);
+        showToast('Hero profile updated successfully!', 'success');
       }
     } catch (err: any) {
-      alert('Failed to update character name');
+      showToast(err.response?.data?.message || err.message || 'Failed to update character profile', 'error');
     } finally {
       setIsSaving(false);
     }
