@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext.js';
 import { AuthProvider } from './context/AuthContext.js';
+import { ToastProvider } from './context/ToastContext.js';
 
 // Layouts
 import { PublicLayout } from './components/layout/PublicLayout.js';
@@ -35,40 +36,42 @@ export const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <ParticleCanvas />
-        <ThemeSelector />
-        <BrowserRouter>
-          <Routes>
-            {/* Public SEO Routes */}
-            <Route element={<PublicLayout />}>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/features" element={<FeaturesPage />} />
-              <Route path="/how-it-works" element={<HowItWorksPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/faq" element={<FAQPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-            </Route>
+        <ToastProvider>
+          <ParticleCanvas />
+          <ThemeSelector />
+          <BrowserRouter>
+            <Routes>
+              {/* Public SEO Routes */}
+              <Route element={<PublicLayout />}>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/features" element={<FeaturesPage />} />
+                <Route path="/how-it-works" element={<HowItWorksPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/faq" element={<FAQPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+              </Route>
 
-            {/* Authenticated Game Routes */}
-            <Route path="/app" element={<GameLayout />}>
-              <Route index element={<DashboardPage />} />
-              <Route path="quests" element={<QuestsPage />} />
-              <Route path="campaigns" element={<CampaignsPage />} />
-              <Route path="journey" element={<JourneyPage />} />
-              <Route path="city" element={<CityPage />} />
-              <Route path="treasury" element={<TreasuryPage />} />
-              <Route path="character" element={<CharacterPage />} />
-              <Route path="stats" element={<CharacterPage />} />
-              <Route path="inventory" element={<InventoryPage />} />
-              <Route path="achievements" element={<AchievementsPage />} />
-              <Route path="boss" element={<BossPage />} />
-            </Route>
+              {/* Authenticated Game Routes */}
+              <Route path="/app" element={<GameLayout />}>
+                <Route index element={<DashboardPage />} />
+                <Route path="quests" element={<QuestsPage />} />
+                <Route path="campaigns" element={<CampaignsPage />} />
+                <Route path="journey" element={<JourneyPage />} />
+                <Route path="city" element={<CityPage />} />
+                <Route path="treasury" element={<TreasuryPage />} />
+                <Route path="character" element={<CharacterPage />} />
+                <Route path="stats" element={<CharacterPage />} />
+                <Route path="inventory" element={<InventoryPage />} />
+                <Route path="achievements" element={<AchievementsPage />} />
+                <Route path="boss" element={<BossPage />} />
+              </Route>
 
-            {/* Fallback Redirect */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
+              {/* Fallback Redirect */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </ToastProvider>
       </AuthProvider>
     </ThemeProvider>
   );

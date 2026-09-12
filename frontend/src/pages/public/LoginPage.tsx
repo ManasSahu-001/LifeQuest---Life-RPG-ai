@@ -70,7 +70,7 @@ export const LoginPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="hero@liferpg.io"
+                  placeholder="hero@lifequest.io"
                   className="block w-full pl-10 pr-3 py-2 border border-[var(--rpg-border)] rounded-[var(--rpg-radius)] bg-[var(--rpg-bg)] text-sm text-[var(--rpg-text)] placeholder-[var(--rpg-muted)] focus:outline-none focus:border-[var(--rpg-primary)] focus:ring-1 focus:ring-[var(--rpg-primary)]"
                 />
               </div>

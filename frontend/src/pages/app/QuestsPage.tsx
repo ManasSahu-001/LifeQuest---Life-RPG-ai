@@ -15,12 +15,14 @@ import {
 } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.js';
+import { useToast } from '../../context/ToastContext.js';
 import { QuestCard, Quest } from '../../components/shared/QuestCard.js';
 import { Button } from '../../components/shared/Button.js';
 import { Modal } from '../../components/shared/Modal.js';
 
 export const QuestsPage: React.FC = () => {
   const { updateCharacterState } = useAuth();
+  const toast = useToast();
   const [quests, setQuests] = useState<Quest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'completed'>('active');
@@ -101,6 +103,7 @@ export const QuestsPage: React.FC = () => {
         });
         if (res.data.success) {
           setIsModalOpen(false);
+          toast.success(`Quest "${title}" updated.`);
           await fetchQuests();
         }
       } else {
@@ -115,11 +118,12 @@ export const QuestsPage: React.FC = () => {
         });
         if (res.data.success) {
           setIsModalOpen(false);
+          toast.success(`Quest "${title}" forged and added to ledger.`);
           await fetchQuests();
         }
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to save quest');
+      toast.error(err.response?.data?.error || 'Failed to save quest');
     } finally {
       setIsSubmitting(false);
     }
@@ -132,10 +136,19 @@ export const QuestsPage: React.FC = () => {
         if (res.data.character) {
           updateCharacterState(res.data.character);
         }
+
+        if (res.data.rewards) {
+          toast.reward(res.data.rewards.xp, res.data.rewards.gold, `Completed: "${res.data.quest?.title}"`);
+        }
+
+        if (res.data.levelUp) {
+          toast.levelUp(res.data.character.level, res.data.character.title);
+        }
+
         await fetchQuests();
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Quest completion error');
+      toast.error(err.response?.data?.error || 'Quest completion error');
     }
   };
 
@@ -143,10 +156,11 @@ export const QuestsPage: React.FC = () => {
     try {
       const res = await api.deleteQuest(id);
       if (res.data.success) {
+        toast.info('Quest deleted from active roster.');
         await fetchQuests();
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to delete quest');
+      toast.error(err.response?.data?.error || 'Failed to delete quest');
     }
   };
 

@@ -38,10 +38,10 @@ export const HowItWorksPage: React.FC = () => {
           Four Simple Steps
         </span>
         <h1 className="text-3xl sm:text-5xl font-heading font-black text-[var(--rpg-text)] mt-2 mb-4">
-          How Life RPG Works
+          How LifeQuest Works
         </h1>
         <p className="text-sm sm:text-base text-[var(--rpg-muted)]">
-          From mundane daily chores to high-impact career projects, learn how the Life RPG loop keeps you locked in flow.
+          From mundane daily chores to high-impact career projects, learn how the LifeQuest loop keeps you locked in flow.
         </p>
       </div>
 

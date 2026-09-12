@@ -27,14 +27,14 @@ export const PublicLayout: React.FC = () => {
                   <Shield className="w-5 h-5" />
                 </div>
                 <span className="font-heading font-bold text-lg">
-                  LIFE<span className="text-[var(--rpg-primary)]">RPG</span>
+                  LIFE<span className="text-[var(--rpg-primary)]">QUEST</span>
                 </span>
               </div>
               <p className="text-xs text-[var(--rpg-muted)] max-w-sm leading-relaxed mb-4">
-                The premier gamified productivity RPG and habit tracking game. Turn your real-life daily goals, habits, and coding projects into an epic adventure. Build your virtual city, level up attributes, defeat world bosses, and forge an unstoppable streak.
+                The premier gamified productivity RPG and AI quest engine. Turn your real-life daily ambitions, habits, and career projects into an epic adventure. Build your virtual city, level up attributes, defeat world bosses, and forge an unstoppable streak.
               </p>
               <div className="text-[11px] font-mono text-[var(--rpg-muted)]">
-                Gamified Productivity App • RPG Task Manager • Habit Tracker Game
+                Gamified Productivity RPG • AI Quest Master • City Realm Engine
               </div>
             </div>
 
@@ -55,7 +55,7 @@ export const PublicLayout: React.FC = () => {
                 </li>
                 <li>
                   <Link to="/about" className="hover:text-[var(--rpg-primary)] transition-colors">
-                    About The Life RPG Engine
+                    About The LifeQuest Engine
                   </Link>
                 </li>
                 <li>
@@ -97,7 +97,7 @@ export const PublicLayout: React.FC = () => {
 
           <div className="pt-8 border-t border-[var(--rpg-border)] flex flex-col sm:flex-row items-center justify-between text-xs text-[var(--rpg-muted)] gap-4">
             <div>
-              © 2026 Life RPG Project. All rights reserved. Server-Authoritative Progression Architecture.
+              © 2026 LifeQuest Project. All rights reserved. Server-Authoritative Progression Architecture.
             </div>
             <div className="flex items-center gap-1 font-mono text-[11px] text-[var(--rpg-primary)]">
               <Sparkles className="w-3.5 h-3.5" />

@@ -27,7 +27,7 @@ export const FeaturesPage: React.FC = () => {
           Engineered for Long-Term Motivation
         </h1>
         <p className="text-sm sm:text-base text-[var(--rpg-muted)]">
-          Discover why Life RPG outperforms conventional habit trackers and simple todo lists through deep game loops, server-authoritative balance, and visual city expansion.
+          Discover why LifeQuest outperforms conventional habit trackers and simple todo lists through deep game loops, server-authoritative balance, and visual city expansion.
         </p>
       </div>
 

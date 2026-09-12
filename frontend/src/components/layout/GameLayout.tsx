@@ -16,7 +16,7 @@ export const GameLayout: React.FC = () => {
             <Shield className="w-6 h-6 text-[var(--rpg-primary)]" />
           </div>
           <p className="font-mono text-xs tracking-widest text-[var(--rpg-primary)] animate-pulse uppercase">
-            Loading Life RPG Engine...
+            Loading LifeQuest Engine...
           </p>
         </div>
       </div>

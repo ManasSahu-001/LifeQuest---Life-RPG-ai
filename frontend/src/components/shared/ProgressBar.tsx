@@ -30,17 +30,17 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     lg: 'h-5',
   };
 
-  const getDefaultColor = () => {
-    if (color) return color;
-    if (currentThemeId === 'theme-a') return '#00f0ff';
-    if (currentThemeId === 'theme-b') return '#d4af37';
-    return '#10b981';
-  };
-
-  const activeColor = getDefaultColor();
+  const activeColor = color || 'var(--rpg-primary)';
 
   return (
-    <div className="w-full">
+    <div
+      className="w-full"
+      role="progressbar"
+      aria-valuenow={value}
+      aria-valuemin={0}
+      aria-valuemax={max}
+      aria-label={label || 'Progress bar'}
+    >
       {(label || showPercentage || subLabel) && (
         <div className="flex justify-between items-center mb-1.5 text-xs font-medium text-[var(--rpg-muted)]">
           <span className="text-[var(--rpg-text)] font-semibold flex items-center gap-1.5">

@@ -36,7 +36,7 @@ export const LandingPage: React.FC = () => {
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--rpg-surface)] border border-[var(--rpg-border)] text-xs font-mono text-[var(--rpg-primary)] mb-8 shadow-[var(--rpg-glow)]"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Gamified Productivity RPG • City Building Engine</span>
+            <span>LifeQuest • Gamified Productivity RPG & AI Quest Master</span>
           </motion.div>
 
           {/* Exact Required H1 for SEO */}
@@ -46,9 +46,9 @@ export const LandingPage: React.FC = () => {
             transition={{ delay: 0.1 }}
             className="text-4xl sm:text-6xl lg:text-7xl font-heading font-black tracking-tight text-[var(--rpg-text)] max-w-4xl mx-auto leading-[1.1] mb-6"
           >
-            Turn Your Real Life Into a{' '}
+            Turn Your Real Life Into an{' '}
             <span className="text-[var(--rpg-primary)] drop-shadow-[0_0_25px_var(--rpg-card-glow)]">
-              City-Building RPG
+              Epic RPG Adventure
             </span>
           </motion.h1>
 
@@ -59,7 +59,7 @@ export const LandingPage: React.FC = () => {
             transition={{ delay: 0.2 }}
             className="text-lg sm:text-xl text-[var(--rpg-muted)] max-w-2xl mx-auto mb-10 leading-relaxed font-normal"
           >
-            Turn your real-life goals and daily tasks into an RPG. Complete quests, earn XP, build your virtual city, maintain streaks, and level up.
+            LifeQuest transforms your real-life ambitions into actionable quest chains. Synthesize goals with the AI Quest Master, earn XP & Gold, level up 4 core attributes, and conquer towering Nemesis Bosses.
           </motion.p>
 
           {/* Call to Action Buttons */}
@@ -182,6 +182,46 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* LifeQuest Transformation Loop Section */}
+      <section className="py-12 border-t border-[var(--rpg-border)] bg-[var(--rpg-bg)]/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--rpg-primary)] font-bold">
+              THE CORE METAGAME LOOP
+            </span>
+            <h2 className="text-xl sm:text-2xl font-heading font-black text-[var(--rpg-text)] mt-1">
+              How Real Ambition Becomes In-Game Power
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            {[
+              { step: '01', title: 'Real Life Goal', desc: 'Input exams, coding sprints, or fitness routines', icon: Brain },
+              { step: '02', title: 'AI Quest Master', desc: 'LLM synthesizes phased tactical quests', icon: Sparkles },
+              { step: '03', title: 'Quest Chain', desc: 'Structured milestones with direct rewards', icon: CheckCircle },
+              { step: '04', title: 'Execute Tasks', desc: 'Do the work with focused discipline', icon: Zap },
+              { step: '05', title: 'XP + Gold + Stats', desc: 'Server-authoritative progression', icon: Trophy },
+              { step: '06', title: 'Level Up', desc: 'Unlock new realms & city districts', icon: Flame },
+              { step: '07', title: 'Boss Progression', desc: 'Inflict damage & claim defeat bounties', icon: Swords },
+            ].map((node, i) => {
+              const Icon = node.icon;
+              return (
+                <div key={i} className="p-3.5 rounded-[var(--rpg-radius)] bg-[var(--rpg-surface)] border border-[var(--rpg-border)] flex flex-col justify-between relative group hover:border-[var(--rpg-primary)] transition-colors">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono text-[var(--rpg-muted)] font-bold">{node.step}</span>
+                    <Icon className="w-4 h-4 text-[var(--rpg-primary)]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-[var(--rpg-text)] leading-tight">{node.title}</h3>
+                    <p className="text-[10px] text-[var(--rpg-muted)] mt-1 line-clamp-2">{node.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Core Features Grid */}
       <section className="py-20 border-t border-[var(--rpg-border)] bg-[var(--rpg-surface)]/40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -190,7 +230,7 @@ export const LandingPage: React.FC = () => {
               Real Life Productivity, Built Like an Epic RPG
             </h2>
             <p className="text-sm sm:text-base text-[var(--rpg-muted)]">
-              Forget mundane checkboxes and generic badges. Life RPG converts every completed task into tangible progression, character growth, and virtual city infrastructure.
+              Forget mundane checkboxes and generic badges. LifeQuest converts every completed task into tangible progression, character growth, and virtual city infrastructure.
             </p>
           </div>
 

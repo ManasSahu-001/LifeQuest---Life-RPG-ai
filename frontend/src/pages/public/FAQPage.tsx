@@ -37,7 +37,7 @@ export const FAQPage: React.FC = () => {
           Frequently Asked Questions
         </h1>
         <p className="text-sm sm:text-base text-[var(--rpg-muted)]">
-          Everything you need to know about the Life RPG game mechanics, privacy, and leveling engine.
+          Everything you need to know about the LifeQuest game mechanics, privacy, and leveling engine.
         </p>
       </div>
 

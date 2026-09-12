@@ -12,9 +12,11 @@ import {
   Clock,
   ArrowRight,
   TrendingUp,
+  Sparkles,
 } from 'lucide-react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.js';
+import { useToast } from '../../context/ToastContext.js';
 import { CharacterPanel } from '../../components/shared/CharacterPanel.js';
 import { QuestCard, Quest } from '../../components/shared/QuestCard.js';
 import { BossCard } from '../../components/shared/BossCard.js';
@@ -23,6 +25,7 @@ import { Modal } from '../../components/shared/Modal.js';
 
 export const DashboardPage: React.FC = () => {
   const { character, updateCharacterState, refreshCharacter } = useAuth();
+  const toast = useToast();
   const [activeQuests, setActiveQuests] = useState<Quest[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLoadingQuests, setIsLoadingQuests] = useState(true);
@@ -69,10 +72,21 @@ export const DashboardPage: React.FC = () => {
         if (res.data.character) {
           updateCharacterState(res.data.character);
         }
+
+        // Trigger reward toast
+        if (res.data.rewards) {
+          toast.reward(res.data.rewards.xp, res.data.rewards.gold, `Completed: "${res.data.quest?.title}"`);
+        }
+
+        // Trigger level up toast if applicable
+        if (res.data.levelUp) {
+          toast.levelUp(res.data.character.level, res.data.character.title);
+        }
+
         await fetchDashboardData();
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to complete quest');
+      toast.error(err.response?.data?.error || 'Failed to complete quest');
     }
   };
 
@@ -95,10 +109,11 @@ export const DashboardPage: React.FC = () => {
         setDescription('');
         setDueDate('');
         setIsModalOpen(false);
+        toast.success(`Quest "${res.data.quest?.title}" forged and ready!`);
         await fetchDashboardData();
       }
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to create quest');
+      toast.error(err.response?.data?.error || 'Failed to create quest');
     } finally {
       setIsSubmitting(false);
     }
@@ -110,25 +125,30 @@ export const DashboardPage: React.FC = () => {
       <div className="p-6 rounded-[var(--rpg-radius)] bg-gradient-to-r from-[var(--rpg-surface)] to-[var(--rpg-bg)] border border-[var(--rpg-border)] shadow-[var(--rpg-glow)] flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
           <div className="inline-flex items-center gap-2 text-xs font-mono text-[var(--rpg-primary)] uppercase tracking-wider mb-2">
-            <Building2 className="w-4 h-4" /> Metropolitan Productivity Hub
+            <Sparkles className="w-4 h-4" /> LifeQuest Command Center
           </div>
           <h2 className="text-xl sm:text-2xl font-heading font-black text-[var(--rpg-text)]">
             Welcome Back, {character?.name || 'Hero'}
           </h2>
           <p className="text-xs text-[var(--rpg-muted)] mt-1 max-w-xl">
-            Complete daily quests to fuel your virtual city’s development, advance attributes, and keep your streak alive.
+            Execute real-world daily quests to fuel your virtual metropolis, expand attributes, inflict Nemesis Boss damage, and advance your streak.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link to="/app/campaigns">
+            <Button variant="outline" size="sm" icon={<Zap className="w-4 h-4 text-cyan-400" />}>
+              AI Campaigns
+            </Button>
+          </Link>
           <Link to="/app/city">
-            <Button variant="outline" size="md" icon={<Building2 className="w-4 h-4" />}>
-              View City Grid
+            <Button variant="outline" size="sm" icon={<Building2 className="w-4 h-4" />}>
+              Virtual City
             </Button>
           </Link>
           <Button
             variant="primary"
-            size="md"
+            size="sm"
             icon={<Plus className="w-4 h-4" />}
             onClick={() => setIsModalOpen(true)}
           >

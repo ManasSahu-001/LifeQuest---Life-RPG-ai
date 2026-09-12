@@ -91,10 +91,10 @@ export const Navbar: React.FC = () => {
               </div>
               <div>
                 <span className="text-lg font-heading font-black tracking-wider text-[var(--rpg-text)] group-hover:text-[var(--rpg-primary)] transition-colors">
-                  LIFE<span className="text-[var(--rpg-primary)]">RPG</span>
+                  LIFE<span className="text-[var(--rpg-primary)]">QUEST</span>
                 </span>
                 <span className="hidden sm:block text-[10px] text-[var(--rpg-muted)] tracking-widest uppercase font-mono">
-                  City Builder
+                  Productivity RPG
                 </span>
               </div>
             </Link>
@@ -271,6 +271,24 @@ export const Navbar: React.FC = () => {
             exit={{ height: 0, opacity: 0 }}
             className="md:hidden border-t border-[var(--rpg-border)] bg-[var(--rpg-bg)] px-4 pt-2 pb-4 space-y-1"
           >
+            {isAuthenticated && character && (
+              <div className="flex items-center justify-around bg-[var(--rpg-surface)] border border-[var(--rpg-border)] p-2.5 rounded-[var(--rpg-radius)] mb-2 font-mono text-xs">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[var(--rpg-muted)] font-bold">LVL</span>
+                  <span className="text-[var(--rpg-primary)] font-bold">{character.level}</span>
+                </div>
+                <div className="w-[1px] h-4 bg-[var(--rpg-border)]" />
+                <div className="flex items-center gap-1 text-orange-400 font-bold">
+                  <Flame className="w-3.5 h-3.5 fill-orange-400" />
+                  <span>{character.streak_count}d</span>
+                </div>
+                <div className="w-[1px] h-4 bg-[var(--rpg-border)]" />
+                <div className="flex items-center gap-1 text-amber-300 font-bold">
+                  <Coins className="w-3.5 h-3.5 text-amber-400" />
+                  <span>{character.gold}</span>
+                </div>
+              </div>
+            )}
             {navLinks.map((link) => (
               <Link
                 key={link.path}
