@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Orbitron:wght@500;700;900&family=Outfit:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --rpg-bg: #08090e;
+  --rpg-surface: #0e111a;
+  --rpg-surface-hover: #161a28;
+  --rpg-border: rgba(0, 240, 255, 0.2);
+  --rpg-primary: #00f0ff;
+  --rpg-primary-hover: #33f3ff;
+  --rpg-secondary: #ff007f;
+  --rpg-accent: #ffe600;
+  --rpg-gold: #ffe600;
+  --rpg-text: #e2f3ff;
+  --rpg-muted: #6a7b95;
+  --rpg-card-glow: rgba(0, 240, 255, 0.25);
+  --rpg-font-heading: 'Orbitron', 'Rajdhani', system-ui, sans-serif;
+  --rpg-font-body: 'Inter', system-ui, sans-serif;
+  --rpg-font-mono: 'JetBrains Mono', monospace;
+  --rpg-radius: 0.25rem;
+}
+
+/* Theme A: Cyberpunk */
+[data-theme="theme-a"] {
+  --rpg-bg: #08090e;
+  --rpg-surface: #0e111a;
+  --rpg-surface-hover: #161a28;
+  --rpg-border: rgba(0, 240, 255, 0.25);
+  --rpg-primary: #00f0ff;
+  --rpg-primary-hover: #33f3ff;
+  --rpg-secondary: #ff007f;
+  --rpg-accent: #ffe600;
+  --rpg-gold: #ffe600;
+  --rpg-text: #e2f3ff;
+  --rpg-muted: #6a7b95;
+  --rpg-card-glow: rgba(0, 240, 255, 0.25);
+  --rpg-font-heading: 'Orbitron', 'Rajdhani', system-ui, sans-serif;
+  --rpg-font-body: 'Inter', system-ui, sans-serif;
+  --rpg-font-mono: 'JetBrains Mono', monospace;
+  --rpg-radius: 0.25rem;
+}
+
+/* Theme B: High Fantasy */
+[data-theme="theme-b"] {
+  --rpg-bg: #12100e;
+  --rpg-surface: #1c1814;
+  --rpg-surface-hover: #28221b;
+  --rpg-border: rgba(212, 175, 55, 0.3);
+  --rpg-primary: #d4af37;
+  --rpg-primary-hover: #e6c35c;
+  --rpg-secondary: #8b1e1e;
+  --rpg-accent: #3a7d44;
+  --rpg-gold: #f0c048;
+  --rpg-text: #f5ecd7;
+  --rpg-muted: #8f8373;
+  --rpg-card-glow: rgba(212, 175, 55, 0.22);
+  --rpg-font-heading: 'Cinzel', 'Georgia', serif;
+  --rpg-font-body: 'Merriweather', 'Georgia', serif;
+  --rpg-font-mono: 'Courier New', monospace;
+  --rpg-radius: 0.6rem;
+}
+
+/* Theme C: Solarpunk */
+[data-theme="theme-c"] {
+  --rpg-bg: #08140f;
+  --rpg-surface: #0f241c;
+  --rpg-surface-hover: #163328;
+  --rpg-border: rgba(16, 185, 129, 0.25);
+  --rpg-primary: #10b981;
+  --rpg-primary-hover: #34d399;
+  --rpg-secondary: #f59e0b;
+  --rpg-accent: #06b6d4;
+  --rpg-gold: #fbbf24;
+  --rpg-text: #e6f7f0;
+  --rpg-muted: #6a9683;
+  --rpg-card-glow: rgba(16, 185, 129, 0.25);
+  --rpg-font-heading: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+  --rpg-font-body: 'Inter', system-ui, sans-serif;
+  --rpg-font-mono: 'Fira Code', monospace;
+  --rpg-radius: 1rem;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--rpg-bg);
+  color: var(--rpg-text);
+  font-family: var(--rpg-font-body);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+/* Cyberpunk scanline overlay */
+[data-theme="theme-a"] .theme-overlay {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Medieval parchment accent */
+[data-theme="theme-b"] .theme-card {
+  border-style: solid;
+  border-image: linear-gradient(to bottom, #d4af37, #594619) 1;
+}
+
+/* Solarpunk glassmorphism */
+[data-theme="theme-c"] .theme-glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--rpg-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--rpg-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rpg-primary);
+}

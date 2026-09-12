@@ -1,0 +1,15 @@
+# Life RPG Robots.txt
+User-agent: *
+Allow: /
+Allow: /features
+Allow: /how-it-works
+Allow: /about
+Allow: /faq
+Allow: /login
+Allow: /signup
+
+# Disallow authenticated private game routes from search index
+Disallow: /app/
+Disallow: /app/*
+
+Sitemap: https://liferpg.app/sitemap.xml
