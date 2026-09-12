@@ -24,3 +24,8 @@ backend/data/
 Thumbs.db
 .vscode/
 .idea/
+
+# AI Agent metadata (Never committed)
+.agents/
+*.agent
+*.skill

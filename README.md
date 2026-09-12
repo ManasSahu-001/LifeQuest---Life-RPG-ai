@@ -1,40 +1,78 @@
-# Life RPG — Master Gamified Productivity & City-Building RPG
+# LifeQuest — Gamified Productivity & Metropolitan City-Building RPG
 
-> **Unified Production Release**: Complete full-stack monorepo integrating Core Backend, Server-Authoritative Progression Engine, 8 Level-Locked Visual Realms, AI Quest Master with Nemesis Boss Battles, 7-District City Builder, Treasury Shop, Animated Character Rigs & Sprites, and Zero-Asset Procedural Web Audio Engine.
+> **Unified Production Release**: Full-stack productivity RPG platform integrating an intelligent AI Quest Master, Server-Authoritative Progression Engine, 8 Level-Locked Visual Realms, Real-time Boss Arena Battles, 7-District Urban City Builder, Treasury Economy, Custom Character Rigs, and Zero-Asset Procedural Web Audio Engine.
 
-Turn your real-life goals and daily tasks into an epic RPG. Complete quests, earn XP, build your virtual metropolis, maintain streaks, and level up to unlock new interdimensional realms!
+Turn your real-life ambitions and daily tasks into an epic adventure. Conquer procrastination, forge questlines, vanquish Nemesis bosses, develop your personal metropolis, and unlock interdimensional realms as you level up!
 
 ---
 
-## 1. Product Architecture
+## 1. Core Metagame Loop
+
+```text
+       ┌────────────────────────┐
+       │   Real-Life Ambition   │  (e.g., "Ace DBMS semester exams in 2 weeks")
+       └───────────┬────────────┘
+                   ▼
+       ┌────────────────────────┐
+       │     AI Quest Master    │  (Procedural / Gemini LLM quest synthesis)
+       └───────────┬────────────┘
+                   ▼
+       ┌────────────────────────┐
+       │  Dynamic Quest Chain   │  (XP, Gold, Attribute Gains & Boss Damage)
+       └───────────┬────────────┘
+                   ▼
+       ┌────────────────────────┐
+       │  Execute Daily Quests  │  (Real-life task completions & habit streaks)
+       └───────────┬────────────┘
+                   ▼
+       ┌────────────────────────┐
+       │ Server-Authorized Math │  (Atomic transactions: XP, Gold, Streak Multiplier)
+       └───────────┬────────────┘
+                   ▼
+       ┌────────────────────────┐
+       │   Level Up & Rewards   │
+       └─────┬────────────┬─────┘
+             │            │
+             ▼            ▼
+   ┌─────────────────┐  ┌───────────────────────────┐
+   │ Boss Arena Raid │  │ Metropolitan City Builder │
+   │ (Strike Bosses) │  │ (Construct Urban Sectors) │
+   └─────────────────┘  └───────────────────────────┘
+```
+
+---
+
+## 2. Product Architecture
 
 The application is structured as a unified, high-performance monorepo with strict separation of concerns and server-authoritative trust:
 
 ```text
 React 19 + TypeScript + Tailwind CSS Frontend (Vite)
       ↓
-Theme Engine (8 Immersive Level-Locked Realms: Themes A through H)
+Theme Engine (8 Immersive Level-Locked Visual Realms: Themes A through H)
+      ↓
+Accessible Toast Notification Engine (XP/Gold chimes, realm warps, level-up celebrations)
       ↓
 Audio Synthesizer Engine (Web Audio API Procedural BGM + Combat SFX)
       ↓
-Interactive Character Stage (8 Visual Avatar Rigs & WalkingHeroSprite)
+AI Quest Master & Boss Arena (Floating combat text, hit flashes, and live combat logs)
       ↓
-AI Quest Master (Real-world ambition synthesis + Nemesis Boss generation)
+Metropolitan City Canvas (6 Specialized Urban Districts & Building Construction)
       ↓
-Metropolitan City Canvas (7 Interactive Urban Districts & Building Construction)
-      ↓
-Shared API Service (Axios Client with JWT Interceptors)
+Shared API Service (Axios Client with JWT Interceptors & path normalization)
       ↓
 ONE Unified Backend (Node.js + Express + TypeScript)
       ↓
-PostgreSQL Dual-Driver Persistence (Embedded PGlite + Remote pg)
+Sliding-Window Rate Limiting Engine (Brute force & AI quota protection)
+      ↓
+PostgreSQL Dual-Driver Persistence (Embedded PGlite + Remote PostgreSQL)
 ```
 
 ---
 
-## 2. Eight Level-Locked Visual Realms
+## 3. Eight Level-Locked Visual Realms
 
-Every theme is an immersive realm featuring unique typography, color palettes, custom particle systems, soundscapes, character rigs, and boss encounters:
+Every realm features custom typography, CSS variable design tokens, canvas particle systems, soundscapes, and character rigs:
 
 | Theme | Realm Name | Required Level | Avatar Class | World Boss | Ambient Visual FX | Soundscape / Procedural BGM |
 |---|---|---|---|---|---|---|
@@ -49,13 +87,13 @@ Every theme is an immersive realm featuring unique typography, color palettes, c
 
 ### Server-Authoritative Level Lock Enforcement
 - Attempting to activate a locked realm (e.g. `PATCH /user/theme` with `theme-h` while at Level 2) returns **HTTP 403 Forbidden**.
-- The Theme Matrix modal (`ThemeSelector.tsx`) visually displays locks, level requirements, and provides audio-tactile feedback.
+- The Theme Matrix modal and Signup Page visually display lock badges and disable unauthorized realms.
 
 ---
 
-## 3. Server-Authoritative RPG Progression Engine
+## 4. Server-Authoritative Progression Engine
 
-The client **never** computes or trusts XP, Gold, Level, Attributes, Streaks, or Boss damage. All state transitions occur within atomic ACID database transactions on the server:
+The client **never** computes or trusts XP, Gold, Level, Attributes, Streaks, or Boss strike damage. All state transitions occur within atomic ACID database transactions on the server:
 
 1. **Nonlinear Leveling Formula**:
    $$\text{requiredXP}(\text{level}) = \lfloor \text{baseXP} \times \text{growthFactor}^{(\text{level} - 1)} \rfloor$$
@@ -68,64 +106,37 @@ The client **never** computes or trusts XP, Gold, Level, Attributes, Streaks, or
    - `discipline` / `knowledge_xp`: Boosted by Study, Finance, and Habit quests
 
 3. **Streak Multiplier System**:
-   - 1-2 Days: Base Rewards
-   - 3-6 Days: **+20% Bonus XP & Gold**
-   - 7-13 Days: **+50% Bonus XP & Gold**
+   - 1–2 Days: Base Rewards
+   - 3–6 Days: **+20% Bonus XP & Gold**
+   - 7–13 Days: **+50% Bonus XP & Gold**
    - 14+ Days: **+100% Double Rewards**
 
 ---
 
-## 4. AI Quest Master & Nemesis Boss Battles
+## 5. Security & Reliability Hardening
 
-Input any real-world goal (e.g., *"Prepare for my DBMS semester exam in 2 weeks"*):
-- The **AI Quest Master** synthesizes a structured, phased quest chain.
-- Spawns a towering **Nemesis Boss** (e.g. *The Mind Flayer*, *Demogorgon*, *Eldritch Lich*).
-- Completing campaign quests inflicts calculated damage directly to the Nemesis Boss's HP, complete with shake animations, floating damage numbers, and victory spoils!
-- Includes intelligent **Procedural RPG Forge** that runs offline with zero API key configuration needed.
-
----
-
-## 5. Metropolitan City Builder
-
-- **7 Interactive Districts**: Technology, Knowledge, Strength & Defense, Sanctuary of Wellness, Treasury & Commerce, Cultural Arts, and Community Plaza.
-- **Constructible Buildings**: Construct structures (AV Club Radio Tower, Hawkins Energy Lab, Public Archives, Iron Crucible Gym, etc.) using earned gold.
-- **Population Simulation**: Your city population expands dynamically as you level up, maintain streaks, and erect new district structures.
+1. **Sliding-Window Rate Limiting (`rateLimiter.ts`)**:
+   - Zero-dependency in-memory sliding window rate limiter.
+   - `authRateLimiter`: Max 20 requests per 15 minutes on `/auth/login` and `/auth/signup`.
+   - `campaignRateLimiter`: Max 10 requests per 10 minutes on `/campaigns/generate`.
+   - `apiRateLimiter`: Global traffic protection across all API routes.
+2. **Server-Calculated Strike Damage**:
+   - Boss strike damage is computed on the server based on the hero's actual `strength` and `level` attributes.
+3. **Information Disclosure Prevention**:
+   - Centralized error handler masks stack traces and database paths in production mode.
 
 ---
 
-## 6. City Treasury & Economy
-
-- **Treasury Exchange**: Spend earned Gold on Realm Licenses, Guild Badges (Hellfire Club Master Pin, Grand Necromancer Sigil), and Relics (Chrono Focus Crystal, Cyber Netrunner Deck).
-- **Equipable Inventory**: Equip items to customize your character profile and active avatar rig.
-
----
-
-## 7. Interactive Character Stage & Walking Hero Sprite
-
-- **8 Hand-Crafted Visual Avatar Rigs**: `CyberNetrunner`, `PaladinKnight`, `SolarBotanist`, `ForestDruid`, `SamuraiRonin`, `CyberArchitect`, `EldritchSorcerer`, and `ShadowWalker`.
-- **Framer-Motion Animated Walking Hero Sprite**: Pixel-art walking sprite on the **Journey Roadmap** navigating across all 8 progressive waypoints.
-- **5 Action States**: Idle, Attack, Celebrate (with Confetti), Hit (with screen shake and damage vignette), and Meditate.
-
----
-
-## 8. Web Audio Procedural Synthesizer
-
-- Zero external MP3/WAV files required: 100% procedurally synthesized in the browser via Web Audio API.
-- Dynamic mastering limiter & dynamics compressor for loud, punchy audio on any speakers.
-- Complete sound effects: Click, Attack strike, Boss hit, Quest Complete chime, Level-Up fanfare, and Item Purchase.
-- Volume slider and master mute toggle built into the navigation bar.
-
----
-
-## 9. Quickstart Guide
+## 6. Quickstart Guide
 
 ### Prerequisites
-- Node.js 18+ installed on your machine.
+- Node.js 18+ and npm installed.
 
 ### Installation & Execution
-From the project root:
-
 ```bash
+# Install dependencies
+npm run install:all
+
 # Run both Backend and Frontend in development mode:
 npm run dev:all
 
@@ -134,22 +145,44 @@ npm run dev:backend   # Starts backend on http://localhost:5000
 npm run dev:frontend  # Starts frontend on http://localhost:5173
 ```
 
-### Building for Production
+### Production Build & Tests
 ```bash
-# Builds both backend and frontend with zero errors:
+# Monorepo build (builds both backend and frontend):
 npm run build
-```
 
-### Running Tests
-```bash
-# Runs backend tests verifying DB, auth, quests, progression, and level locks:
+# Run automated backend test suite (9 tests covering DB, auth, quests, progression, level locks, and rate limits):
 npm run test
 ```
 
 ### Dual Database Options
-1. **Embedded Zero-Config (Default)**: Uses `@electric-sql/pglite` running locally in WebAssembly with persistent file storage in `backend/data/rpg-pglite`. No PostgreSQL installation required!
-2. **Remote PostgreSQL**: Set `DATABASE_URL=postgresql://user:pass@localhost:5432/liferpg` in `backend/.env` to connect to any standard PostgreSQL server.
+1. **Embedded Zero-Config (Default)**: Uses `@electric-sql/pglite` running locally in WebAssembly with persistent file storage in `backend/data/rpg-pglite`. No external PostgreSQL setup required!
+2. **Remote PostgreSQL**: Set `DATABASE_URL=postgresql://user:pass@localhost:5432/lifequest` in `backend/.env` to connect to Supabase, Railway, Neon, or AWS RDS.
+
+---
+
+## 7. Production Deployment Guide
+
+### Frontend Deployment (Vercel)
+1. Push this repository to GitHub.
+2. Import the repository in [Vercel](https://vercel.com).
+3. Set **Root Directory** to `frontend`.
+4. Set Environment Variable:
+   - `VITE_API_URL`: Your deployed backend URL (e.g. `https://your-backend.up.railway.app`).
+5. Deploy! (Routing is preconfigured via `frontend/vercel.json`).
+
+### Backend Deployment (Railway / Render)
+1. In Railway or Render, create a new service from the repository.
+2. Set **Root Directory** to `backend`.
+3. Build Command: `npm run build`
+4. Start Command: `npm start`
+5. Configure Environment Variables according to `backend/.env.example`:
+   - `PORT=5000`
+   - `NODE_ENV=production`
+   - `JWT_SECRET=your_secure_secret_key`
+   - `DATABASE_URL=your_postgresql_connection_string` (optional; if omitted, embedded PGlite is used)
+   - `GEMINI_API_KEY=your_gemini_key` (optional)
 
 ---
 
 **Built with pride for high performance, zero procrastination, and epic gamified productivity.**
+
