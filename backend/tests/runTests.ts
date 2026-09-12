@@ -4,6 +4,7 @@ import { seedDatabase } from '../src/db/seed.js';
 import { AuthService } from '../src/services/authService.js';
 import { RpgEngine } from '../src/services/rpgEngine.js';
 import { ThemeController } from '../src/controllers/themeController.js';
+import { createRateLimiter } from '../src/middleware/rateLimiter.js';
 
 let passed = 0;
 let failed = 0;
@@ -239,6 +240,38 @@ async function runAllTests() {
 
     // Restore character level to 2
     await db.query('UPDATE characters SET level = 2 WHERE user_id = $1', [userAId]);
+  });
+
+  await test('Rate limiter and request quota enforcement', async () => {
+    const limiter = createRateLimiter({ windowMs: 60000, max: 2 });
+    let passedCount = 0;
+    let blocked = false;
+
+    const mockNext = () => {
+      passedCount++;
+    };
+    const mockRes: any = {
+      setHeader: () => {},
+      status: (code: number) => ({
+        json: (data: any) => {
+          if (code === 429) blocked = true;
+        },
+      }),
+    };
+    const mockReq: any = { ip: '127.0.0.1', headers: {}, socket: {} };
+
+    const originalEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+    try {
+      limiter(mockReq, mockRes, mockNext); // 1st
+      limiter(mockReq, mockRes, mockNext); // 2nd
+      limiter(mockReq, mockRes, mockNext); // 3rd: blocked
+    } finally {
+      process.env.NODE_ENV = originalEnv;
+    }
+
+    assert.strictEqual(passedCount, 2, 'Rate limiter should allow exactly 2 requests');
+    assert.strictEqual(blocked, true, 'Rate limiter should return 429 on 3rd request');
   });
 
   console.log('\n========================================');

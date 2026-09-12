@@ -17,6 +17,8 @@ import campaignRoutes from './routes/campaignRoutes.js';
 import cityRoutes from './routes/cityRoutes.js';
 import economyRoutes from './routes/economyRoutes.js';
 
+import { apiRateLimiter } from './middleware/rateLimiter.js';
+
 const app = express();
 
 // Middleware
@@ -34,10 +36,13 @@ if (config.nodeEnv === 'development') {
   });
 }
 
-// Health check endpoint
+// Health check endpoint (exempt from rate limits)
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Rate limiting for general API requests
+app.use(apiRateLimiter);
 
 // Direct top-level routes
 app.use('/auth', authRoutes);

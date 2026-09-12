@@ -77,7 +77,18 @@ export class BossController {
 
       const boss = bossRes.rows[0];
 
-      const strikeDamage = Math.max(1, Math.min(100, parseInt(damage || '15', 10)));
+      // Server Authority: Calculate strike damage strictly from character attributes and level
+      const charRes = await db.query(
+        'SELECT strength, level FROM characters WHERE user_id = $1',
+        [userId]
+      );
+      const character = charRes.rows[0];
+      const baseAttack = Math.round(((character?.strength || 10) * 1.5) + ((character?.level || 1) * 2));
+      const requestedDamage = parseInt(damage || `${baseAttack}`, 10);
+      const strikeDamage = isNaN(requestedDamage)
+        ? baseAttack
+        : Math.max(5, Math.min(Math.round(baseAttack * 1.5), requestedDamage));
+
       const newHp = Math.max(0, boss.current_hp - strikeDamage);
       const isDefeated = newHp === 0;
 
