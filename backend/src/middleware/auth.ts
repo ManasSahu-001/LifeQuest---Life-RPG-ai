@@ -8,6 +8,8 @@ export interface AuthenticatedUser {
   theme: string;
 }
 
+export type AuthRequest = Request;
+
 declare global {
   namespace Express {
     interface Request {
@@ -15,6 +17,8 @@ declare global {
     }
   }
 }
+
+export const authenticateToken = requireAuth;
 
 export async function requireAuth(
   req: Request,

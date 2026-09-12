@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useTheme } from '../../context/ThemeContext.js';
+import { FogCanvas } from './FogCanvas.js';
+import { ParticleSporeCanvas } from './ParticleSporeCanvas.js';
 
 interface Particle {
   x: number;
@@ -16,6 +18,13 @@ interface Particle {
 export const ParticleCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { currentThemeId } = useTheme();
+
+  if (currentThemeId === 'theme-g') {
+    return <FogCanvas />;
+  }
+  if (currentThemeId === 'theme-h') {
+    return <ParticleSporeCanvas />;
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current;

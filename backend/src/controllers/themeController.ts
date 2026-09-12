@@ -8,8 +8,8 @@ export const THEME_REQUIRED_LEVELS: Record<string, { level: number; name: string
   'theme-d': { level: 4, name: 'Enchanted Forest' },
   'theme-e': { level: 5, name: 'Last Samurai Standing' },
   'theme-f': { level: 6, name: 'Build Your City' },
-  'theme-g': { level: 7, name: 'Deep Space Odyssey' },
-  'theme-h': { level: 8, name: 'Eldritch Void' },
+  'theme-g': { level: 7, name: 'Haunted World: Cursed Necropolis' },
+  'theme-h': { level: 8, name: 'The Upside Down: Hawkins 1984' },
 };
 
 export const THEME_ALIASES: Record<string, string> = {
@@ -19,6 +19,10 @@ export const THEME_ALIASES: Record<string, string> = {
   forest: 'theme-d',
   samurai: 'theme-e',
   city: 'theme-f',
+  haunted: 'theme-g',
+  necropolis: 'theme-g',
+  upside: 'theme-h',
+  stranger: 'theme-h',
 };
 
 export class ThemeController {

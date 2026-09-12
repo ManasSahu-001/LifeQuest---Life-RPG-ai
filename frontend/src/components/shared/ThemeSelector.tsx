@@ -10,6 +10,8 @@ import {
   Cpu,
   Shield,
   Sun,
+  Ghost,
+  Radio,
   X,
   AlertCircle,
 } from 'lucide-react';
@@ -30,6 +32,8 @@ const THEME_ICONS: Record<string, any> = {
   Sparkles,
   Sword,
   Building2,
+  Ghost,
+  Radio,
 };
 
 export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen: propIsOpen, onClose: propOnClose }) => {

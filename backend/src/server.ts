@@ -13,6 +13,9 @@ import achievementRoutes from './routes/achievementRoutes.js';
 import rewardRoutes from './routes/rewardRoutes.js';
 import bossRoutes from './routes/bossRoutes.js';
 import skillRoutes from './routes/skillRoutes.js';
+import campaignRoutes from './routes/campaignRoutes.js';
+import cityRoutes from './routes/cityRoutes.js';
+import economyRoutes from './routes/economyRoutes.js';
 
 const app = express();
 
@@ -36,7 +39,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Direct top-level routes as per prompt specification
+// Direct top-level routes
 app.use('/auth', authRoutes);
 app.use('/quests', questRoutes);
 app.use('/character', characterRoutes);
@@ -45,6 +48,9 @@ app.use('/achievements', achievementRoutes);
 app.use('/rewards', rewardRoutes);
 app.use('/boss', bossRoutes);
 app.use('/skills', skillRoutes);
+app.use('/campaigns', campaignRoutes);
+app.use('/city', cityRoutes);
+app.use('/economy', economyRoutes);
 
 // Also mount under /api for standard REST client prefixing
 const apiRouter = express.Router();
@@ -56,6 +62,9 @@ apiRouter.use('/achievements', achievementRoutes);
 apiRouter.use('/rewards', rewardRoutes);
 apiRouter.use('/boss', bossRoutes);
 apiRouter.use('/skills', skillRoutes);
+apiRouter.use('/campaigns', campaignRoutes);
+apiRouter.use('/city', cityRoutes);
+apiRouter.use('/economy', economyRoutes);
 
 app.use('/api', apiRouter);
 

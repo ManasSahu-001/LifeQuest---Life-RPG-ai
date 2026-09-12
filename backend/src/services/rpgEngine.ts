@@ -65,6 +65,14 @@ export interface CompletionResult {
     bossRemainingHp: number;
     bossDefeated: boolean;
   } | null;
+  campaignBossDamage?: {
+    bossId: number;
+    title: string;
+    damageDealt: number;
+    remainingHp: number;
+    maxHp: number;
+    isDefeated: boolean;
+  } | null;
 }
 
 export class RpgEngine {
@@ -258,12 +266,21 @@ export class RpgEngine {
       rewards.totalXP
     );
 
-    // 7. Calculate attribute gain
+    // 7. Calculate attribute & district XP gain
     const attrInfo = this.getAttributeGain(quest.category, quest.difficulty);
     const newIntellect = char.intellect + (attrInfo.attribute === 'intellect' ? attrInfo.gain : 0);
     const newStrength = char.strength + (attrInfo.attribute === 'strength' ? attrInfo.gain : 0);
     const newCreativity = char.creativity + (attrInfo.attribute === 'creativity' ? attrInfo.gain : 0);
     const newDiscipline = char.discipline + (attrInfo.attribute === 'discipline' ? attrInfo.gain : 0);
+
+    const cat = (quest.category || '').toLowerCase();
+    const techGain = cat === 'coding' ? rewards.totalXP : 0;
+    const knowGain = cat === 'study' ? rewards.totalXP : 0;
+    const strGain = cat === 'fitness' ? rewards.totalXP : 0;
+    const wellGain = cat === 'wellness' ? rewards.totalXP : 0;
+    const econGain = cat === 'finance' ? rewards.totalXP : 0;
+    const cultGain = cat === 'creative' ? rewards.totalXP : 0;
+    const commGain = (cat !== 'coding' && cat !== 'study' && cat !== 'fitness' && cat !== 'wellness' && cat !== 'finance' && cat !== 'creative') ? rewards.totalXP : 0;
 
     const newGold = char.gold + rewards.totalGold;
     const todayIsoDate = now.toISOString().split('T')[0];
@@ -280,8 +297,15 @@ export class RpgEngine {
            strength = $7,
            creativity = $8,
            discipline = $9,
+           tech_xp = COALESCE(tech_xp, 0) + $10,
+           knowledge_xp = COALESCE(knowledge_xp, 0) + $11,
+           strength_xp = COALESCE(strength_xp, 0) + $12,
+           wellness_xp = COALESCE(wellness_xp, 0) + $13,
+           economy_xp = COALESCE(economy_xp, 0) + $14,
+           culture_xp = COALESCE(culture_xp, 0) + $15,
+           community_xp = COALESCE(community_xp, 0) + $16,
            updated_at = CURRENT_TIMESTAMP
-       WHERE id = $10
+       WHERE id = $17
        RETURNING *`,
       [
         progression.level,
@@ -293,6 +317,13 @@ export class RpgEngine {
         newStrength,
         newCreativity,
         newDiscipline,
+        techGain,
+        knowGain,
+        strGain,
+        wellGain,
+        econGain,
+        cultGain,
+        commGain,
         char.id,
       ]
     );
@@ -377,6 +408,52 @@ export class RpgEngine {
       };
     }
 
+    // 14. Campaign Nemesis Boss interaction (if quest belongs to a campaign)
+    let campaignBossResult: any = null;
+    if (quest.campaign_id) {
+      const campBossRes = await dbClient.query(
+        'SELECT * FROM campaign_bosses WHERE campaign_id = $1 AND is_defeated = FALSE LIMIT 1',
+        [quest.campaign_id]
+      );
+
+      if (campBossRes.rows.length > 0) {
+        const cBoss = campBossRes.rows[0];
+        const campDmg = quest.boss_damage || 75;
+        const newCampHp = Math.max(0, cBoss.current_hp - campDmg);
+        const campDefeated = newCampHp === 0;
+
+        await dbClient.query(
+          'UPDATE campaign_bosses SET current_hp = $1, is_defeated = $2 WHERE id = $3',
+          [newCampHp, campDefeated, cBoss.id]
+        );
+
+        await dbClient.query(
+          'UPDATE campaigns SET completed_quests = completed_quests + 1 WHERE id = $1',
+          [quest.campaign_id]
+        );
+
+        if (campDefeated) {
+          await dbClient.query(
+            "UPDATE campaigns SET status = 'completed' WHERE id = $1",
+            [quest.campaign_id]
+          );
+          await dbClient.query(
+            'UPDATE characters SET gold = gold + $1, current_xp = current_xp + $2 WHERE id = $3',
+            [cBoss.reward_gold, cBoss.reward_xp, char.id]
+          );
+        }
+
+        campaignBossResult = {
+          bossId: cBoss.id,
+          title: cBoss.title,
+          damageDealt: campDmg,
+          remainingHp: newCampHp,
+          maxHp: cBoss.max_hp,
+          isDefeated: campDefeated,
+        };
+      }
+    }
+
     // Attach required dynamic progress data to character response
     const finalCharacterState = {
       ...updatedCharacter,
@@ -399,6 +476,7 @@ export class RpgEngine {
       levelsGained: progression.levelsGained,
       unlockedAchievements,
       bossDamage: bossDamageResult,
+      campaignBossDamage: campaignBossResult,
     };
   }
 

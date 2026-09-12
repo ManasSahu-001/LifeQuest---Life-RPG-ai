@@ -4,6 +4,8 @@
   "description": "Life RPG - Gamified Productivity & City-Building RPG (Unified Production Release)",
   "private": true,
   "scripts": {
+    "dev": "npm run dev:backend",
+    "dev:all": "start npm run dev:backend && start npm run dev:frontend",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "build:backend": "npm --prefix backend run build",

@@ -8,6 +8,8 @@ import { CyberArchitect } from './CyberArchitect.js';
 import { CyberNetrunner } from './CyberNetrunner.js';
 import { PaladinKnight } from './PaladinKnight.js';
 import { SolarBotanist } from './SolarBotanist.js';
+import { EldritchSorcerer } from './EldritchSorcerer.js';
+import { ShadowWalker } from './ShadowWalker.js';
 import { audioEngine } from '../../services/audioEngine.js';
 import confetti from 'canvas-confetti';
 import { Sparkles, Sword, Shield, Zap, Flame, Award, Heart } from 'lucide-react';
@@ -58,7 +60,11 @@ export const CharacterStage: React.FC<CharacterStageProps> = ({
           ? 'ANIMA BLOOM'
           : currentThemeId === 'theme-e'
           ? 'SHADOW KATA'
-          : 'BLUEPRINT SURGE';
+          : currentThemeId === 'theme-f'
+          ? 'BLUEPRINT SURGE'
+          : currentThemeId === 'theme-g'
+          ? 'SPECTRAL HARVEST'
+          : 'PSIONIC RIFT OVERLOAD';
       setFloatingDamage({ text: abilityName, color: 'text-cyan-400', id: Date.now() });
     } else if (actionName === 'meditate') {
       setFloatingDamage({ text: 'DISCIPLINE +100%', color: 'text-emerald-400', id: Date.now() });
@@ -144,6 +150,8 @@ export const CharacterStage: React.FC<CharacterStageProps> = ({
         {currentThemeId === 'theme-d' && <ForestDruid action={currentAction} />}
         {currentThemeId === 'theme-e' && <SamuraiRonin action={currentAction} />}
         {currentThemeId === 'theme-f' && <CyberArchitect action={currentAction} />}
+        {currentThemeId === 'theme-g' && <EldritchSorcerer action={currentAction} />}
+        {currentThemeId === 'theme-h' && <ShadowWalker action={currentAction} />}
       </div>
 
       {/* Character Name & Weapon */}

@@ -1,4 +1,4 @@
--- Life RPG Database Schema (PostgreSQL)
+-- Life RPG Unified Database Schema (PostgreSQL)
 
 -- 1. Users Table
 CREATE TABLE IF NOT EXISTS users (
@@ -6,11 +6,13 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     theme VARCHAR(50) DEFAULT 'theme-a' NOT NULL,
+    governor_title VARCHAR(100) DEFAULT 'Novice Founder' NOT NULL,
+    city_name VARCHAR(100) DEFAULT 'Neo Haven' NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- 2. Characters Table
+-- 2. Characters & RPG Progression Table
 CREATE TABLE IF NOT EXISTS characters (
     id SERIAL PRIMARY KEY,
     user_id INTEGER UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -18,27 +20,68 @@ CREATE TABLE IF NOT EXISTS characters (
     title VARCHAR(100) NOT NULL DEFAULT 'Novice Adventurer',
     level INTEGER NOT NULL DEFAULT 1,
     current_xp INTEGER NOT NULL DEFAULT 0,
-    gold INTEGER NOT NULL DEFAULT 50,
+    gold INTEGER NOT NULL DEFAULT 150,
     streak_count INTEGER NOT NULL DEFAULT 0,
     last_completed_date DATE,
     intellect INTEGER NOT NULL DEFAULT 10,
     strength INTEGER NOT NULL DEFAULT 10,
     creativity INTEGER NOT NULL DEFAULT 10,
     discipline INTEGER NOT NULL DEFAULT 10,
+    population INTEGER NOT NULL DEFAULT 120,
+    tech_xp INTEGER NOT NULL DEFAULT 0,
+    knowledge_xp INTEGER NOT NULL DEFAULT 0,
+    strength_xp INTEGER NOT NULL DEFAULT 0,
+    wellness_xp INTEGER NOT NULL DEFAULT 0,
+    economy_xp INTEGER NOT NULL DEFAULT 0,
+    culture_xp INTEGER NOT NULL DEFAULT 0,
+    community_xp INTEGER NOT NULL DEFAULT 0,
     avatar_url VARCHAR(255) DEFAULT 'default_avatar',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- 3. Quests Table
+-- 3. Campaigns (AI-Forged or Custom Multi-Quest Ambitions)
+CREATE TABLE IF NOT EXISTS campaigns (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+    real_life_goal TEXT NOT NULL,
+    status VARCHAR(30) DEFAULT 'active' NOT NULL, -- active, completed, abandoned
+    total_quests INTEGER DEFAULT 0 NOT NULL,
+    completed_quests INTEGER DEFAULT 0 NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- 4. Campaign Nemesis Bosses
+CREATE TABLE IF NOT EXISTS campaign_bosses (
+    id SERIAL PRIMARY KEY,
+    campaign_id INTEGER UNIQUE NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(150) NOT NULL,
+    boss_type VARCHAR(50) NOT NULL, -- mind_flayer, demogorgon, eldritch_lich, gargoyle_king, shadow_beast
+    description TEXT,
+    max_hp INTEGER NOT NULL DEFAULT 500,
+    current_hp INTEGER NOT NULL DEFAULT 500,
+    is_defeated BOOLEAN NOT NULL DEFAULT FALSE,
+    reward_gold INTEGER NOT NULL DEFAULT 200,
+    reward_xp INTEGER NOT NULL DEFAULT 450,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- 5. Quests Table
 CREATE TABLE IF NOT EXISTS quests (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    campaign_id INTEGER REFERENCES campaigns(id) ON DELETE SET NULL,
     title VARCHAR(200) NOT NULL,
     description TEXT DEFAULT '',
-    category VARCHAR(50) NOT NULL DEFAULT 'coding', -- coding, study, fitness, creative, habit
+    category VARCHAR(50) NOT NULL DEFAULT 'coding', -- coding, study, fitness, creative, habit, wellness, finance, social
     difficulty VARCHAR(20) NOT NULL DEFAULT 'medium', -- easy, medium, hard, epic
     priority VARCHAR(20) NOT NULL DEFAULT 'medium', -- low, medium, high, urgent
+    attribute_type VARCHAR(50) NOT NULL DEFAULT 'intellect',
+    attribute_gain INTEGER NOT NULL DEFAULT 5,
+    boss_damage INTEGER NOT NULL DEFAULT 50,
     xp_reward INTEGER NOT NULL DEFAULT 50,
     gold_reward INTEGER NOT NULL DEFAULT 25,
     streak_bonus INTEGER NOT NULL DEFAULT 0,
@@ -49,7 +92,7 @@ CREATE TABLE IF NOT EXISTS quests (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- 4. Quest Completions History
+-- 6. Quest Completions History
 CREATE TABLE IF NOT EXISTS quest_completions (
     id SERIAL PRIMARY KEY,
     quest_id INTEGER NOT NULL REFERENCES quests(id) ON DELETE CASCADE,
@@ -60,7 +103,29 @@ CREATE TABLE IF NOT EXISTS quest_completions (
     streak_at_completion INTEGER NOT NULL
 );
 
--- 5. Achievements Master Table
+-- 7. City Districts & Buildings Table
+CREATE TABLE IF NOT EXISTS user_buildings (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    district VARCHAR(50) NOT NULL, -- technology, knowledge, strength, wellness, economy, culture, community
+    building_key VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    tier INTEGER NOT NULL DEFAULT 1,
+    unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- 8. Treasury & Inventory Items Table
+CREATE TABLE IF NOT EXISTS inventory_items (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    item_key VARCHAR(100) NOT NULL,
+    item_name VARCHAR(100) NOT NULL,
+    item_type VARCHAR(50) NOT NULL, -- building, theme, badge, artifact, consumable
+    is_equipped BOOLEAN NOT NULL DEFAULT FALSE,
+    purchased_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- 9. Achievements Master Table
 CREATE TABLE IF NOT EXISTS achievements (
     id SERIAL PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
@@ -74,7 +139,7 @@ CREATE TABLE IF NOT EXISTS achievements (
     gold_reward INTEGER NOT NULL DEFAULT 50
 );
 
--- 6. User Achievements Junction Table
+-- 10. User Achievements Junction Table
 CREATE TABLE IF NOT EXISTS user_achievements (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -83,7 +148,7 @@ CREATE TABLE IF NOT EXISTS user_achievements (
     CONSTRAINT unique_user_achievement UNIQUE(user_id, achievement_id)
 );
 
--- 7. Rewards Master Table (Shop Items)
+-- 11. Rewards Master Table (Shop Items)
 CREATE TABLE IF NOT EXISTS rewards (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
@@ -93,7 +158,7 @@ CREATE TABLE IF NOT EXISTS rewards (
     category VARCHAR(50) NOT NULL DEFAULT 'consumable'
 );
 
--- 8. User Rewards Table (Purchased Inventory)
+-- 12. User Rewards Table (Purchased Consumables/Buffs)
 CREATE TABLE IF NOT EXISTS user_rewards (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -102,20 +167,20 @@ CREATE TABLE IF NOT EXISTS user_rewards (
     is_claimed BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- 9. XP & Gold Transactions Log
+-- 13. XP & Gold Transactions Log
 CREATE TABLE IF NOT EXISTS xp_transactions (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     character_id INTEGER NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
     amount INTEGER NOT NULL,
     currency_type VARCHAR(20) NOT NULL DEFAULT 'XP', -- XP or GOLD
-    source_type VARCHAR(50) NOT NULL, -- quest_completion, achievement_unlock, reward_purchase, boss_defeat
+    source_type VARCHAR(50) NOT NULL, -- quest_completion, achievement_unlock, reward_purchase, boss_defeat, building_construction
     source_id INTEGER,
     balance_after INTEGER NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- 10. World Boss & Battle State
+-- 14. World Boss & Battle State (Realm Bosses)
 CREATE TABLE IF NOT EXISTS bosses (
     id SERIAL PRIMARY KEY,
     theme VARCHAR(50) DEFAULT 'theme-a',
@@ -132,9 +197,7 @@ CREATE TABLE IF NOT EXISTS bosses (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-ALTER TABLE bosses ADD COLUMN IF NOT EXISTS theme VARCHAR(50) DEFAULT 'theme-a';
-
--- 11. User Boss Attacks
+-- 15. User Boss Attacks
 CREATE TABLE IF NOT EXISTS boss_attacks (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -144,7 +207,7 @@ CREATE TABLE IF NOT EXISTS boss_attacks (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
--- 12. Skills & User Skills (Skill Tree)
+-- 16. Skills & User Skills (Skill Tree)
 CREATE TABLE IF NOT EXISTS skills (
     id SERIAL PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
@@ -171,6 +234,12 @@ CREATE TABLE IF NOT EXISTS user_skills (
 CREATE INDEX IF NOT EXISTS idx_quests_user_id ON quests(user_id);
 CREATE INDEX IF NOT EXISTS idx_quests_category ON quests(category);
 CREATE INDEX IF NOT EXISTS idx_quests_completed ON quests(is_completed);
+CREATE INDEX IF NOT EXISTS idx_quests_campaign_id ON quests(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_campaigns_user_id ON campaigns(user_id);
+CREATE INDEX IF NOT EXISTS idx_campaign_bosses_user_id ON campaign_bosses(user_id);
+CREATE INDEX IF NOT EXISTS idx_campaign_bosses_campaign_id ON campaign_bosses(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_user_buildings_user_id ON user_buildings(user_id);
+CREATE INDEX IF NOT EXISTS idx_inventory_items_user_id ON inventory_items(user_id);
 CREATE INDEX IF NOT EXISTS idx_quest_completions_user_id ON quest_completions(user_id);
 CREATE INDEX IF NOT EXISTS idx_quest_completions_quest_id ON quest_completions(quest_id);
 CREATE INDEX IF NOT EXISTS idx_xp_transactions_user_id ON xp_transactions(user_id);

@@ -19,6 +19,8 @@ import {
   Music,
   Volume2,
   VolumeX,
+  Wand2,
+  MapPin,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.js';
 import { useTheme } from '../../context/ThemeContext.js';
@@ -60,7 +62,10 @@ export const Navbar: React.FC = () => {
     ? [
         { path: '/app', label: 'Dashboard', icon: Compass },
         { path: '/app/quests', label: 'Quests', icon: CheckSquare },
+        { path: '/app/campaigns', label: 'AI Campaigns', icon: Wand2 },
         { path: '/app/city', label: 'Virtual City', icon: Building2 },
+        { path: '/app/treasury', label: 'Treasury', icon: Coins },
+        { path: '/app/journey', label: 'Roadmap', icon: MapPin },
         { path: '/app/character', label: 'Character', icon: UserIcon },
         { path: '/app/boss', label: 'World Boss', icon: Swords },
         { path: '/app/inventory', label: 'Shop', icon: Package },

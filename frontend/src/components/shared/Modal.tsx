@@ -7,6 +7,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
+  subtitle?: string;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl';
 }
@@ -15,6 +16,7 @@ export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
+  subtitle,
   children,
   maxWidth = 'md',
 }) => {
@@ -59,9 +61,14 @@ export const Modal: React.FC<ModalProps> = ({
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--rpg-border)] bg-[var(--rpg-bg)]/50">
-              <h3 className="text-lg font-heading font-bold text-[var(--rpg-text)] flex items-center gap-2">
-                {title}
-              </h3>
+              <div>
+                <h3 className="text-lg font-heading font-bold text-[var(--rpg-text)] flex items-center gap-2">
+                  {title}
+                </h3>
+                {subtitle && (
+                  <p className="text-xs text-[var(--rpg-muted)] mt-0.5">{subtitle}</p>
+                )}
+              </div>
               <button
                 onClick={onClose}
                 className="p-1 rounded text-[var(--rpg-muted)] hover:text-[var(--rpg-text)] hover:bg-[var(--rpg-surface-hover)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--rpg-primary)]"

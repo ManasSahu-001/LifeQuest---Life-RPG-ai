@@ -4,10 +4,12 @@ import { themeC } from './themeC.js';
 import { themeD } from './themeD.js';
 import { themeE } from './themeE.js';
 import { themeF } from './themeF.js';
+import { themeG } from './themeG.js';
+import { themeH } from './themeH.js';
 import { ThemeDefinition } from './types.js';
 
 export * from './types.js';
-export { themeA, themeB, themeC, themeD, themeE, themeF };
+export { themeA, themeB, themeC, themeD, themeE, themeF, themeG, themeH };
 
 export const THEMES: Record<string, ThemeDefinition> = {
   'theme-a': themeA,
@@ -16,6 +18,8 @@ export const THEMES: Record<string, ThemeDefinition> = {
   'theme-d': themeD,
   'theme-e': themeE,
   'theme-f': themeF,
+  'theme-g': themeG,
+  'theme-h': themeH,
 };
 
 export const THEME_ALIASES: Record<string, string> = {
@@ -25,6 +29,10 @@ export const THEME_ALIASES: Record<string, string> = {
   forest: 'theme-d',
   samurai: 'theme-e',
   city: 'theme-f',
+  haunted: 'theme-g',
+  necropolis: 'theme-g',
+  upside: 'theme-h',
+  stranger: 'theme-h',
 };
 
 export const DEFAULT_THEME_ID = 'theme-a';
@@ -51,4 +59,3 @@ export function getThemeRequiredLevel(themeId: string): number {
   const theme = getTheme(themeId);
   return theme?.requiredLevel ?? 1;
 }
-

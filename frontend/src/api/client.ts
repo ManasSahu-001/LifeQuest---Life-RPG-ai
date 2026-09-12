@@ -35,6 +35,12 @@ apiClient.interceptors.response.use(
 
 // API Service functions
 export const api = {
+  // Direct HTTP methods
+  get: apiClient.get.bind(apiClient),
+  post: apiClient.post.bind(apiClient),
+  patch: apiClient.patch.bind(apiClient),
+  delete: apiClient.delete.bind(apiClient),
+
   // Auth
   signup: (data: { email: string; password: string; characterName?: string; theme?: string }) =>
     apiClient.post('/auth/signup', data),

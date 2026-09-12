@@ -11,6 +11,11 @@ interface ThemeContextType {
     userLevelOrPersist?: number | boolean,
     persist?: boolean
   ) => Promise<{ success: boolean; error?: string }>;
+  switchTheme: (
+    themeId: string,
+    userLevelOrPersist?: number | boolean,
+    persist?: boolean
+  ) => Promise<{ success: boolean; error?: string }>;
   availableThemes: ThemeDefinition[];
   isThemeSelectorOpen: boolean;
   openThemeSelector: () => void;
@@ -96,6 +101,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         currentThemeId,
         theme: activeTheme,
         setThemeId,
+        switchTheme: setThemeId,
         availableThemes: Object.values(THEMES),
         isThemeSelectorOpen,
         openThemeSelector: () => setIsThemeSelectorOpen(true),

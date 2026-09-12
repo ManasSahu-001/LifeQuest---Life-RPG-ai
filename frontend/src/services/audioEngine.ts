@@ -229,9 +229,9 @@ class AudioEngine {
         harpStep++;
       }, 380);
 
-    } else {
+    } else if (themeId === 'theme-c' || themeId === 'theme-d' || themeId === 'theme-e' || themeId === 'theme-f') {
       // ----------------------------------------
-      // THEME C: Solarpunk - LOUD RADIANT BIOPHILIC HARMONY
+      // THEME C-F: Solarpunk / Forest / Samurai / City
       // Lush crystal glass pad + resonant solar chime bells
       // ----------------------------------------
       const filter = this.ctx.createBiquadFilter();
@@ -282,6 +282,112 @@ class AudioEngine {
         osc.stop(t + 0.65);
         chimeStep++;
       }, 340);
+
+    } else if (themeId === 'theme-g') {
+      // ----------------------------------------
+      // THEME G: Haunted World - GOTHIC CRYPT PIPE ORGAN & SPECTRAL DRONE
+      // ----------------------------------------
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1200, now);
+      filter.Q.setValueAtTime(3.0, now);
+      filter.connect(this.bgmGain);
+      this.bgmFilter = filter;
+
+      const lfo = this.ctx.createOscillator();
+      const lfoGain = this.ctx.createGain();
+      lfo.frequency.setValueAtTime(0.12, now);
+      lfoGain.gain.setValueAtTime(350, now);
+      lfo.connect(lfoGain);
+      lfoGain.connect(filter.frequency);
+      lfo.start(now);
+      this.bgmLfo = lfo;
+
+      // Dark Minor Gothic Chords: C2, G2, Eb3, G3, C4
+      const organNotes = [65.41, 98.0, 155.56, 196.0, 261.63];
+      organNotes.forEach((freq, idx) => {
+        const osc = this.ctx!.createOscillator();
+        const oscGain = this.ctx!.createGain();
+        osc.type = idx % 2 === 0 ? 'sawtooth' : 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+        oscGain.gain.setValueAtTime(0.35, now);
+        osc.connect(oscGain);
+        oscGain.connect(filter);
+        osc.start(now);
+        this.bgmOscillators.push(osc);
+      });
+
+      // Haunting Spectral Bells
+      const bellNotes = [311.13, 392.0, 466.16, 523.25, 622.25];
+      let bellStep = 0;
+      this.bgmIntervalId = window.setInterval(() => {
+        if (!this.ctx || !this.isBgmPlaying) return;
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(bellNotes[bellStep % bellNotes.length], t);
+        g.gain.setValueAtTime(0.32, t);
+        g.gain.exponentialRampToValueAtTime(0.002, t + 0.8);
+        osc.connect(g);
+        g.connect(this.bgmGain!);
+        osc.start(t);
+        osc.stop(t + 0.85);
+        bellStep++;
+      }, 550);
+
+    } else if (themeId === 'theme-h') {
+      // ----------------------------------------
+      // THEME H: The Upside Down - '80s DETUNED ANALOG SYNTHWAVE DRONE
+      // ----------------------------------------
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(900, now);
+      filter.Q.setValueAtTime(4.0, now);
+      filter.connect(this.bgmGain);
+      this.bgmFilter = filter;
+
+      const lfo = this.ctx.createOscillator();
+      const lfoGain = this.ctx.createGain();
+      lfo.frequency.setValueAtTime(0.3, now);
+      lfoGain.gain.setValueAtTime(500, now);
+      lfo.connect(lfoGain);
+      lfoGain.connect(filter.frequency);
+      lfo.start(now);
+      this.bgmLfo = lfo;
+
+      // Heavy Detuned Sawtooth Bass Pad (E1 41Hz, B1 61Hz, E2 82Hz, G2 98Hz)
+      const retroNotes = [41.2, 61.74, 82.41, 98.0, 164.81];
+      retroNotes.forEach((freq, idx) => {
+        const osc = this.ctx!.createOscillator();
+        const oscGain = this.ctx!.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq + (idx % 2 === 0 ? -1.5 : 1.5), now);
+        oscGain.gain.setValueAtTime(0.40, now);
+        osc.connect(oscGain);
+        oscGain.connect(filter);
+        osc.start(now);
+        this.bgmOscillators.push(osc);
+      });
+
+      // Iconic 8-Note Hawkins Synth Bass Sequence (C, E, G, B, C, B, G, E)
+      const hawkinsArp = [130.81, 164.81, 196.0, 246.94, 261.63, 246.94, 196.0, 164.81];
+      let hStep = 0;
+      this.bgmIntervalId = window.setInterval(() => {
+        if (!this.ctx || !this.isBgmPlaying) return;
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(hawkinsArp[hStep % hawkinsArp.length], t);
+        g.gain.setValueAtTime(0.42, t);
+        g.gain.exponentialRampToValueAtTime(0.01, t + 0.16);
+        osc.connect(g);
+        g.connect(filter);
+        osc.start(t);
+        osc.stop(t + 0.18);
+        hStep++;
+      }, 160);
     }
   }
 

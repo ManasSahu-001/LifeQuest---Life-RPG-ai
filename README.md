@@ -1,51 +1,55 @@
-# Life RPG — Gamified Productivity & City-Building RPG
+# Life RPG — Master Gamified Productivity & City-Building RPG
 
-> **Unified Production Release**: Fully integrated single application combining Tech Member 1 (Core Backend, Server-Authoritative PostgreSQL Engine, Progression, Themes A-C) and Tech Member 2 (Themes D-F, Sound Engine, Particle Canvas, Interactive Character Rigs, Realm Milestones).
+> **Unified Production Release**: Complete full-stack monorepo integrating Core Backend, Server-Authoritative Progression Engine, 8 Level-Locked Visual Realms, AI Quest Master with Nemesis Boss Battles, 7-District City Builder, Treasury Shop, Animated Character Rigs & Sprites, and Zero-Asset Procedural Web Audio Engine.
 
-Turn your real-life goals and daily tasks into an RPG. Complete quests, earn XP, build your virtual city, maintain streaks, and level up to unlock new realms!
+Turn your real-life goals and daily tasks into an epic RPG. Complete quests, earn XP, build your virtual metropolis, maintain streaks, and level up to unlock new interdimensional realms!
 
 ---
 
 ## 1. Product Architecture
 
-The application is structured as a unified monorepo with strict separation of concerns and server-authoritative trust:
+The application is structured as a unified, high-performance monorepo with strict separation of concerns and server-authoritative trust:
 
 ```text
 React 19 + TypeScript + Tailwind CSS Frontend (Vite)
       ↓
-Theme Engine (6 Immersive Level-Locked Realms)
+Theme Engine (8 Immersive Level-Locked Realms: Themes A through H)
       ↓
 Audio Synthesizer Engine (Web Audio API Procedural BGM + Combat SFX)
       ↓
-Interactive Character Stage (6 Visual Avatar Rigs & Theme Particle Canvas)
+Interactive Character Stage (8 Visual Avatar Rigs & WalkingHeroSprite)
+      ↓
+AI Quest Master (Real-world ambition synthesis + Nemesis Boss generation)
+      ↓
+Metropolitan City Canvas (7 Interactive Urban Districts & Building Construction)
       ↓
 Shared API Service (Axios Client with JWT Interceptors)
       ↓
-ONE Backend (Node.js + Express + TypeScript)
+ONE Unified Backend (Node.js + Express + TypeScript)
       ↓
-PostgreSQL Dual-Driver Persistence (pg + @electric-sql/pglite)
+PostgreSQL Dual-Driver Persistence (Embedded PGlite + Remote pg)
 ```
 
 ---
 
-## 2. Six Level-Locked Visual Themes
+## 2. Eight Level-Locked Visual Realms
 
-Every theme is a complete, immersive realm with unique typography, CSS variables, soundscapes, particle systems, interactive avatar rigs, boss encounters, and virtual city progression.
+Every theme is an immersive realm featuring unique typography, color palettes, custom particle systems, soundscapes, character rigs, and boss encounters:
 
-**Themes are strictly level-locked** both on the client UI and server-authoritatively in the backend:
+| Theme | Realm Name | Required Level | Avatar Class | World Boss | Ambient Visual FX | Soundscape / Procedural BGM |
+|---|---|---|---|---|---|---|
+| **Theme A** | Cyberpunk Synthwave | **Level 1** | Cyber Netrunner | The Procrastination Protocol | Cyan/Pink Data Sparks | Neon Arpeggiator & Deep Bass |
+| **Theme B** | High Fantasy Realm | **Level 2** | Paladin Knight | Dread Dragon Fafnir | Golden Stardust Motes | Lydian Harp & Castle Chords |
+| **Theme C** | Solarpunk Metropolis | **Level 3** | Solar Botanist | The Smog Colossus | Sunlit Chlorophyll Motes | Organic Marimba & Flute Drone |
+| **Theme D** | Enchanted Forest | **Level 4** | Forest Druid | Malakor, The Blight Treant | Bioluminescent Spores | Wind Chimes & Pentatonic Bells |
+| **Theme E** | Last Samurai Standing | **Level 5** | Samurai Ronin | Kurokage, Shadow Shogun | Falling Sakura Petals | Koto Plucks & Taiko Resonances |
+| **Theme F** | Build Your City | **Level 6** | Cyber Architect | Titan OVERLOAD-9 | Blueprint Grid Sparks | Industrial Tech Pulse & Bass |
+| **Theme G** | Haunted World | **Level 7** | Eldritch Sorcerer | Lord Malathrax, Cursed Lich | Graveyard Mist (`FogCanvas`) | Gothic Pipe Organ Drone |
+| **Theme H** | The Upside Down | **Level 8** | Psionic Shadow Walker | The Mind Flayer | Floating Spores (`ParticleSporeCanvas`) | Detuned '80s Analog Synth Pulse |
 
-| Theme | Realm Name | Required Level | Avatar Class | World Boss | Ambient Particle FX |
-|---|---|---|---|---|---|
-| **Theme A** | Cyberpunk Synthwave | **Level 1** | Cyber Netrunner | The Procrastination Protocol | Neon Cyan/Pink Data Sparks |
-| **Theme B** | High Fantasy Realm | **Level 2** | Paladin Knight | The Dread Dragon of Sloth | Golden Stardust Motes |
-| **Theme C** | Solarpunk Metropolis | **Level 3** | Solar Botanist | The Smog Leviathan | Sunlit Chlorophyll Motes |
-| **Theme D** | Enchanted Forest | **Level 4** | Forest Druid | Corrupted Ancient Treant | Bioluminescent Spores |
-| **Theme E** | Last Samurai Standing | **Level 5** | Samurai Ronin | Shogun of Indolence | Falling Sakura Petals |
-| **Theme F** | Build Your City | **Level 6** | Cyber Architect | Decay Colossus | Architectural Blueprint Sparks |
-
-### Level Lock Enforcement
-- **Server-Authoritative Validation**: Attempting to switch to a locked theme (e.g. `PATCH /api/user/theme` with `theme-d` while at Level 2) returns **HTTP 403 Forbidden** with an informative error message.
-- **Client Matrix UI**: The Theme Matrix modal (`ThemeSelector.tsx`) displays lock icons, level progress bars, and prevents premature activation with audio-tactile feedback.
+### Server-Authoritative Level Lock Enforcement
+- Attempting to activate a locked realm (e.g. `PATCH /user/theme` with `theme-h` while at Level 2) returns **HTTP 403 Forbidden**.
+- The Theme Matrix modal (`ThemeSelector.tsx`) visually displays locks, level requirements, and provides audio-tactile feedback.
 
 ---
 
@@ -53,105 +57,99 @@ Every theme is a complete, immersive realm with unique typography, CSS variables
 
 The client **never** computes or trusts XP, Gold, Level, Attributes, Streaks, or Boss damage. All state transitions occur within atomic ACID database transactions on the server:
 
-1. **Deterministic Nonlinear Leveling Formula**:
+1. **Nonlinear Leveling Formula**:
    $$\text{requiredXP}(\text{level}) = \lfloor \text{baseXP} \times \text{growthFactor}^{(\text{level} - 1)} \rfloor$$
    With $\text{baseXP} = 100$ and $\text{growthFactor} = 1.25$. Surplus XP overflows deterministically across multiple levels.
 
-2. **Data-Driven 4-Attribute System**:
-   * **Intellect**: Coding & study tasks.
-   * **Strength**: Fitness & physical exercise.
-   * **Creativity**: Art, writing, and design tasks.
-   * **Discipline**: Habit tracking, morning routines, and streak preservation.
+2. **Core RPG & Department Attributes**:
+   - `intellect` / `tech_xp`: Boosted by Coding & Technical quests
+   - `strength` / `strength_xp`: Boosted by Fitness & Physical quests
+   - `creativity` / `culture_xp`: Boosted by Creative & Design quests
+   - `discipline` / `knowledge_xp`: Boosted by Study, Finance, and Habit quests
 
-3. **Consecutive Daily Streak Multipliers**:
-   * Same calendar day: Preserves current streak.
-   * Consecutive day: Increments streak by $+1$, granting $+10\%$ bonus XP and $+5\%$ bonus Gold per day (up to $2.0\times$ multiplier).
-   * Missed day: Resets streak to 1 to preserve authentic stakes.
-
-4. **Community & Theme World Boss Battles**:
-   * Completing quests in the real world strikes the active realm boss with damage equal to $\text{XP} / 2$.
-   * Exploiting boss category weaknesses delivers a **1.5x Critical Strike**.
+3. **Streak Multiplier System**:
+   - 1-2 Days: Base Rewards
+   - 3-6 Days: **+20% Bonus XP & Gold**
+   - 7-13 Days: **+50% Bonus XP & Gold**
+   - 14+ Days: **+100% Double Rewards**
 
 ---
 
-## 4. Key Systems & Modules
+## 4. AI Quest Master & Nemesis Boss Battles
 
-### Audio Synthesizer Engine (`audioEngine.ts`)
-* Built directly on the standard **Web Audio API** — zero external audio assets required.
-* Procedural BGM tailored to each theme (Pentatonic fantasy arpeggios, Cyberpunk bass drones, Nature flutes, Shamisen scales, Lo-fi city beats).
-* Procedural sound effects: `playQuestComplete()`, `playLevelUp()`, `playAttack()`, `playHit()`, `playMeditate()`.
-* Master mute toggle and volume normalization controls.
-
-### Interactive Character Stage (`CharacterStage.tsx`)
-* Dedicated interactive combat ring featuring 6 theme-reactive SVG avatars (`CyberNetrunner`, `PaladinKnight`, `SolarBotanist`, `ForestDruid`, `SamuraiRonin`, `CyberArchitect`).
-* Action controls (`Strike`, `Ability`, `Focus`, `Clash`, `Victory`) with dynamic animations, floating damage numbers, and sound integration.
-
-### Virtual City Grid & Realm Milestones (`CityPage.tsx`)
-* Interactive isometric district grid (Residential, Commercial, Industrial, Tech Hub, Parks, Monuments).
-* 5 progressive Realm Milestones per theme (e.g., *Outpost → Village → Citadel → Metropolis → Imperial Sanctum*).
-
-### Production SEO & Accessibility
-* Exact required H1 tag: `Turn Your Real Life Into a City-Building RPG`.
-* Schema.org `SoftwareApplication` JSON-LD structured data.
-* Open Graph tags, Twitter card meta, canonical links, `robots.txt`, and `sitemap.xml`.
-* Responsive across mobile (375px), tablet (768px), and desktop (1024px+).
+Input any real-world goal (e.g., *"Prepare for my DBMS semester exam in 2 weeks"*):
+- The **AI Quest Master** synthesizes a structured, phased quest chain.
+- Spawns a towering **Nemesis Boss** (e.g. *The Mind Flayer*, *Demogorgon*, *Eldritch Lich*).
+- Completing campaign quests inflicts calculated damage directly to the Nemesis Boss's HP, complete with shake animations, floating damage numbers, and victory spoils!
+- Includes intelligent **Procedural RPG Forge** that runs offline with zero API key configuration needed.
 
 ---
 
-## 5. Technology Stack
+## 5. Metropolitan City Builder
 
-* **Frontend**: React 19, TypeScript, Tailwind CSS, Framer Motion, Lucide React, React Router v7, Canvas Confetti.
-* **Backend**: Node.js, Express, TypeScript, bcryptjs, jsonwebtoken, cors.
-* **Database**: PostgreSQL with dual-driver support:
-  * `pg` for standard PostgreSQL (AWS RDS, Supabase, Neon, local Docker).
-  * `@electric-sql/pglite` for zero-configuration, in-process persistent embedded PostgreSQL.
-* **Audio**: Procedural Web Audio API sound synthesis.
+- **7 Interactive Districts**: Technology, Knowledge, Strength & Defense, Sanctuary of Wellness, Treasury & Commerce, Cultural Arts, and Community Plaza.
+- **Constructible Buildings**: Construct structures (AV Club Radio Tower, Hawkins Energy Lab, Public Archives, Iron Crucible Gym, etc.) using earned gold.
+- **Population Simulation**: Your city population expands dynamically as you level up, maintain streaks, and erect new district structures.
 
 ---
 
-## 6. Getting Started & Verification
+## 6. City Treasury & Economy
+
+- **Treasury Exchange**: Spend earned Gold on Realm Licenses, Guild Badges (Hellfire Club Master Pin, Grand Necromancer Sigil), and Relics (Chrono Focus Crystal, Cyber Netrunner Deck).
+- **Equipable Inventory**: Equip items to customize your character profile and active avatar rig.
+
+---
+
+## 7. Interactive Character Stage & Walking Hero Sprite
+
+- **8 Hand-Crafted Visual Avatar Rigs**: `CyberNetrunner`, `PaladinKnight`, `SolarBotanist`, `ForestDruid`, `SamuraiRonin`, `CyberArchitect`, `EldritchSorcerer`, and `ShadowWalker`.
+- **Framer-Motion Animated Walking Hero Sprite**: Pixel-art walking sprite on the **Journey Roadmap** navigating across all 8 progressive waypoints.
+- **5 Action States**: Idle, Attack, Celebrate (with Confetti), Hit (with screen shake and damage vignette), and Meditate.
+
+---
+
+## 8. Web Audio Procedural Synthesizer
+
+- Zero external MP3/WAV files required: 100% procedurally synthesized in the browser via Web Audio API.
+- Dynamic mastering limiter & dynamics compressor for loud, punchy audio on any speakers.
+- Complete sound effects: Click, Attack strike, Boss hit, Quest Complete chime, Level-Up fanfare, and Item Purchase.
+- Volume slider and master mute toggle built into the navigation bar.
+
+---
+
+## 9. Quickstart Guide
 
 ### Prerequisites
-* Node.js v18+ (tested on Node v24.13.0)
-* npm v9+
+- Node.js 18+ installed on your machine.
 
-### Running the Automated Test Suite
+### Installation & Execution
+From the project root:
+
 ```bash
-# Run backend test suite (covering leveling, streaks, attributes, isolation, transactions, and theme level locks)
-npm --prefix backend test
+# Run both Backend and Frontend in development mode:
+npm run dev:all
+
+# Or run separately:
+npm run dev:backend   # Starts backend on http://localhost:5000
+npm run dev:frontend  # Starts frontend on http://localhost:5173
 ```
 
-### Starting the Application
-
-1. **Start the Backend API (Port 5000)**:
-   ```bash
-   cd backend
-   npm run dev
-   ```
-
-2. **Start the Frontend Client (Port 5173)**:
-   ```bash
-   cd frontend
-   npm run dev
-   ```
-
-### Production Build
+### Building for Production
 ```bash
-# Build backend
-npm --prefix backend run build
-
-# Build frontend
-npm --prefix frontend run build
+# Builds both backend and frontend with zero errors:
+npm run build
 ```
+
+### Running Tests
+```bash
+# Runs backend tests verifying DB, auth, quests, progression, and level locks:
+npm run test
+```
+
+### Dual Database Options
+1. **Embedded Zero-Config (Default)**: Uses `@electric-sql/pglite` running locally in WebAssembly with persistent file storage in `backend/data/rpg-pglite`. No PostgreSQL installation required!
+2. **Remote PostgreSQL**: Set `DATABASE_URL=postgresql://user:pass@localhost:5432/liferpg` in `backend/.env` to connect to any standard PostgreSQL server.
 
 ---
 
-## 7. Verification Checklist
-
-- [x] All 6 themes integrated with unique visual styles, terminologies, and audio tracks.
-- [x] Level locks enforced on both client UI and server API (Theme A: Lvl 1, B: Lvl 2, C: Lvl 3, D: Lvl 4, E: Lvl 5, F: Lvl 6).
-- [x] Server-authoritative PostgreSQL progression (no mock engine in production).
-- [x] 8 automated backend unit & integration tests passing (100% pass rate).
-- [x] TypeScript builds passing for both frontend and backend with 0 errors.
-- [x] Full responsive design verified across mobile, tablet, and desktop viewports.
-- [x] Production SEO complete (exact H1, JSON-LD, meta tags, robots.txt, sitemap.xml).
+**Built with pride for high performance, zero procrastination, and epic gamified productivity.**

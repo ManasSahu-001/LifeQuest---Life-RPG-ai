@@ -124,6 +124,30 @@ export async function seedDatabase(): Promise<void> {
       gold_bounty: 900,
       xp_bounty: 1500,
     },
+    {
+      theme: 'theme-g',
+      name: 'Lord Malathrax, The Cursed Lich',
+      title: 'Monarch of the Spectral Necropolis',
+      description: 'An ancient dread sorcerer wielding soul-binding procrastination curses. Shatter his phylactery with unwavering study and discipline!',
+      max_hp: 2100,
+      current_hp: 2100,
+      level: 9,
+      weakness_category: 'study',
+      gold_bounty: 1050,
+      xp_bounty: 1800,
+    },
+    {
+      theme: 'theme-h',
+      name: 'The Mind Flayer',
+      title: 'Shadow Sovereign of the Upside Down',
+      description: 'A colossal psionic titan looming across dimensions over Hawkins 1984. Sever its hivemind connection through intense coding focus!',
+      max_hp: 2500,
+      current_hp: 2500,
+      level: 10,
+      weakness_category: 'coding',
+      gold_bounty: 1250,
+      xp_bounty: 2200,
+    },
   ];
 
   for (const b of bossesList) {

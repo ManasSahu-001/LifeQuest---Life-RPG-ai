@@ -24,6 +24,9 @@ import { CityPage } from './pages/app/CityPage.js';
 import { InventoryPage } from './pages/app/InventoryPage.js';
 import { AchievementsPage } from './pages/app/AchievementsPage.js';
 import { BossPage } from './pages/app/BossPage.js';
+import { CampaignsPage } from './pages/app/CampaignsPage.js';
+import { JourneyPage } from './pages/app/JourneyPage.js';
+import { TreasuryPage } from './pages/app/TreasuryPage.js';
 
 import { ParticleCanvas } from './components/shared/ParticleCanvas.js';
 import { ThemeSelector } from './components/shared/ThemeSelector.js';
@@ -51,9 +54,12 @@ export const App: React.FC = () => {
             <Route path="/app" element={<GameLayout />}>
               <Route index element={<DashboardPage />} />
               <Route path="quests" element={<QuestsPage />} />
+              <Route path="campaigns" element={<CampaignsPage />} />
+              <Route path="journey" element={<JourneyPage />} />
+              <Route path="city" element={<CityPage />} />
+              <Route path="treasury" element={<TreasuryPage />} />
               <Route path="character" element={<CharacterPage />} />
               <Route path="stats" element={<CharacterPage />} />
-              <Route path="city" element={<CityPage />} />
               <Route path="inventory" element={<InventoryPage />} />
               <Route path="achievements" element={<AchievementsPage />} />
               <Route path="boss" element={<BossPage />} />
