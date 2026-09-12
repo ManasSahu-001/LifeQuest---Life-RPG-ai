@@ -36,6 +36,25 @@ if (config.nodeEnv === 'development') {
   });
 }
 
+// Root endpoint for browser & status check
+app.get('/', (req, res) => {
+  res.json({
+    message: '⚔️ LifeQuest RPG Core Backend API is Live!',
+    status: 'online',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      auth: '/auth (or /api/auth)',
+      quests: '/quests (or /api/quests)',
+      character: '/character (or /api/character)',
+      themes: '/user/theme (or /api/user/theme)',
+      economy: '/economy (or /api/economy)',
+      city: '/city (or /api/city)'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Health check endpoint (exempt from rate limits)
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
