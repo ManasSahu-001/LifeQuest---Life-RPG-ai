@@ -4,9 +4,21 @@ import { db } from '../db/index.js';
 export class BossController {
   static async getActiveBoss(req: Request, res: Response): Promise<void> {
     try {
-      const bossRes = await db.query(
-        'SELECT * FROM bosses WHERE is_active = TRUE ORDER BY id ASC LIMIT 1'
-      );
+      const themeParam = (req.query.theme as string)?.toLowerCase().trim();
+      let bossRes;
+
+      if (themeParam) {
+        bossRes = await db.query(
+          'SELECT * FROM bosses WHERE theme = $1 AND is_active = TRUE ORDER BY id ASC LIMIT 1',
+          [themeParam]
+        );
+      }
+
+      if (!bossRes || bossRes.rows.length === 0) {
+        bossRes = await db.query(
+          'SELECT * FROM bosses WHERE is_active = TRUE ORDER BY id ASC LIMIT 1'
+        );
+      }
 
       if (bossRes.rows.length === 0) {
         // Return completed/defeated boss fallback
@@ -48,11 +60,15 @@ export class BossController {
   static async attackBoss(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.user!.id;
-      const { damage } = req.body;
+      const { damage, bossId } = req.body;
 
-      const bossRes = await db.query(
-        'SELECT * FROM bosses WHERE is_active = TRUE ORDER BY id ASC LIMIT 1'
-      );
+      let bossRes;
+      if (bossId) {
+        bossRes = await db.query('SELECT * FROM bosses WHERE id = $1', [bossId]);
+      }
+      if (!bossRes || bossRes.rows.length === 0) {
+        bossRes = await db.query('SELECT * FROM bosses WHERE is_active = TRUE ORDER BY id ASC LIMIT 1');
+      }
 
       if (bossRes.rows.length === 0) {
         res.status(400).json({ success: false, error: 'No active boss to attack.' });
@@ -60,6 +76,7 @@ export class BossController {
       }
 
       const boss = bossRes.rows[0];
+
       const strikeDamage = Math.max(1, Math.min(100, parseInt(damage || '15', 10)));
       const newHp = Math.max(0, boss.current_hp - strikeDamage);
       const isDefeated = newHp === 0;

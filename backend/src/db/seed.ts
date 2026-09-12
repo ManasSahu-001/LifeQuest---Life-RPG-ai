@@ -50,26 +50,91 @@ export async function seedDatabase(): Promise<void> {
     }
   }
 
-  // 3. Seed World Boss
-  const bossCount = await db.query('SELECT COUNT(*) as count FROM bosses');
-  if (parseInt(bossCount.rows[0].count, 10) === 0) {
-    console.log('[SEED] Seeding world boss...');
-    await db.query(
-      `INSERT INTO bosses (name, title, description, max_hp, current_hp, level, weakness_category, gold_bounty, xp_bounty, is_active)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
-      [
-        'The Procrastination Behemoth',
-        'Devourer of Deadlines',
-        'A shadowy colossus formed from unwritten code, missed alarms, and pending tasks. Defeat it by completing productive quests!',
-        1000,
-        1000,
-        5,
-        'coding',
-        500,
-        1000,
-        true,
-      ]
-    );
+  // 3. Seed World Bosses (for all 6 themes)
+  const bossesList = [
+    {
+      theme: 'theme-a',
+      name: 'The Procrastination Behemoth',
+      title: 'Devourer of Deadlines (Cyber-Matrix)',
+      description: 'A shadowy colossus formed from unwritten code, missed alarms, and pending tasks.',
+      max_hp: 1000,
+      current_hp: 1000,
+      level: 5,
+      weakness_category: 'coding',
+      gold_bounty: 500,
+      xp_bounty: 1000,
+    },
+    {
+      theme: 'theme-b',
+      name: 'Dread Dragon Fafnir',
+      title: 'Scourge of the High Realm',
+      description: 'An ancient wyrm nesting on unearned treasures. Defeat it with deep study and scholastic knowledge!',
+      max_hp: 1400,
+      current_hp: 1400,
+      level: 6,
+      weakness_category: 'study',
+      gold_bounty: 650,
+      xp_bounty: 1200,
+    },
+    {
+      theme: 'theme-c',
+      name: 'The Smog Colossus',
+      title: 'Choker of the Solar Canopy',
+      description: 'Toxic industrial haze threatening the biophilic metropolis. Slay it with rigorous daily discipline habits!',
+      max_hp: 1100,
+      current_hp: 1100,
+      level: 5,
+      weakness_category: 'habit',
+      gold_bounty: 550,
+      xp_bounty: 1050,
+    },
+    {
+      theme: 'theme-d',
+      name: 'Malakor, The Blight Treant',
+      title: 'Corruptor of the Ancient Sapling',
+      description: 'Thorns and blackened sap threaten to choke the life of the holy druidic grove. Defeat it through active fitness and vitality!',
+      max_hp: 1200,
+      current_hp: 1200,
+      level: 6,
+      weakness_category: 'fitness',
+      gold_bounty: 600,
+      xp_bounty: 1100,
+    },
+    {
+      theme: 'theme-e',
+      name: 'Kurokage, The Shadow Shogun',
+      title: 'Lord of the Burning Torii',
+      description: 'A fallen warlord seeking to extinguish the last ember of samurai discipline. Strike down his darkness with creative mastery!',
+      max_hp: 1500,
+      current_hp: 1500,
+      level: 7,
+      weakness_category: 'creative',
+      gold_bounty: 750,
+      xp_bounty: 1350,
+    },
+    {
+      theme: 'theme-f',
+      name: 'Titan OVERLOAD-9',
+      title: 'Industrial Grid Glitch',
+      description: 'A rogue AI mainframe causing rolling blackouts and infrastructure structural collapse. Neutralize it with high-performance code!',
+      max_hp: 1800,
+      current_hp: 1800,
+      level: 8,
+      weakness_category: 'coding',
+      gold_bounty: 900,
+      xp_bounty: 1500,
+    },
+  ];
+
+  for (const b of bossesList) {
+    const existing = await db.query('SELECT id FROM bosses WHERE name = $1', [b.name]);
+    if (existing.rows.length === 0) {
+      await db.query(
+        `INSERT INTO bosses (theme, name, title, description, max_hp, current_hp, level, weakness_category, gold_bounty, xp_bounty, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, TRUE)`,
+        [b.theme, b.name, b.title, b.description, b.max_hp, b.current_hp, b.level, b.weakness_category, b.gold_bounty, b.xp_bounty]
+      );
+    }
   }
 
   // 4. Seed Skills

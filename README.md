@@ -1,161 +1,157 @@
 # Life RPG — Gamified Productivity & City-Building RPG
 
-> **Tech Member 1 Deliverable**: Core Backend, PostgreSQL Database, Authentication, Server-Authoritative RPG Progression Engine, and Theme Engine with Theme A (Cyberpunk), Theme B (High Fantasy), and Theme C (Solarpunk).
+> **Unified Production Release**: Fully integrated single application combining Tech Member 1 (Core Backend, Server-Authoritative PostgreSQL Engine, Progression, Themes A-C) and Tech Member 2 (Themes D-F, Sound Engine, Particle Canvas, Interactive Character Rigs, Realm Milestones).
 
-Turn your real-life goals and daily tasks into an RPG. Complete quests, earn XP, build your city, maintain streaks, and level up.
+Turn your real-life goals and daily tasks into an RPG. Complete quests, earn XP, build your virtual city, maintain streaks, and level up to unlock new realms!
 
 ---
 
-## 1. Project Architecture
+## 1. Product Architecture
 
-The architecture maintains strict separation of concerns across a unified monorepo:
+The application is structured as a unified monorepo with strict separation of concerns and server-authoritative trust:
 
 ```text
-React Frontend (Vite + Tailwind + Framer Motion)
+React 19 + TypeScript + Tailwind CSS Frontend (Vite)
       ↓
-Theme Provider (Theme A: Cyberpunk / Theme B: High Fantasy / Theme C: Solarpunk)
+Theme Engine (6 Immersive Level-Locked Realms)
       ↓
-Shared Components (QuestCard, CharacterPanel, BossCard, SkillTree, ProgressBar, Navbar)
+Audio Synthesizer Engine (Web Audio API Procedural BGM + Combat SFX)
+      ↓
+Interactive Character Stage (6 Visual Avatar Rigs & Theme Particle Canvas)
       ↓
 Shared API Service (Axios Client with JWT Interceptors)
       ↓
 ONE Backend (Node.js + Express + TypeScript)
       ↓
-PostgreSQL Persistence (ACID Transactions, Foreign Key Cascades, Index Optimization)
+PostgreSQL Dual-Driver Persistence (pg + @electric-sql/pglite)
 ```
 
 ---
 
-## 2. Technology Stack
+## 2. Six Level-Locked Visual Themes
 
-* **Frontend**: React 18, TypeScript, Tailwind CSS, Framer Motion, Lucide React, React Router v7, Canvas Confetti.
-* **Backend**: Node.js, Express, TypeScript, bcryptjs, jsonwebtoken, cors.
-* **Database & Persistence**: PostgreSQL with dual-driver support (`pg` for remote PostgreSQL databases like AWS RDS/Neon/Supabase and `@electric-sql/pglite` for zero-configuration, in-process persistent embedded PostgreSQL).
-* **Authentication**: Custom JWT authentication with salted bcrypt password hashing, HTTP Bearer tokens, and strict user isolation.
+Every theme is a complete, immersive realm with unique typography, CSS variables, soundscapes, particle systems, interactive avatar rigs, boss encounters, and virtual city progression.
+
+**Themes are strictly level-locked** both on the client UI and server-authoritatively in the backend:
+
+| Theme | Realm Name | Required Level | Avatar Class | World Boss | Ambient Particle FX |
+|---|---|---|---|---|---|
+| **Theme A** | Cyberpunk Synthwave | **Level 1** | Cyber Netrunner | The Procrastination Protocol | Neon Cyan/Pink Data Sparks |
+| **Theme B** | High Fantasy Realm | **Level 2** | Paladin Knight | The Dread Dragon of Sloth | Golden Stardust Motes |
+| **Theme C** | Solarpunk Metropolis | **Level 3** | Solar Botanist | The Smog Leviathan | Sunlit Chlorophyll Motes |
+| **Theme D** | Enchanted Forest | **Level 4** | Forest Druid | Corrupted Ancient Treant | Bioluminescent Spores |
+| **Theme E** | Last Samurai Standing | **Level 5** | Samurai Ronin | Shogun of Indolence | Falling Sakura Petals |
+| **Theme F** | Build Your City | **Level 6** | Cyber Architect | Decay Colossus | Architectural Blueprint Sparks |
+
+### Level Lock Enforcement
+- **Server-Authoritative Validation**: Attempting to switch to a locked theme (e.g. `PATCH /api/user/theme` with `theme-d` while at Level 2) returns **HTTP 403 Forbidden** with an informative error message.
+- **Client Matrix UI**: The Theme Matrix modal (`ThemeSelector.tsx`) displays lock icons, level progress bars, and prevents premature activation with audio-tactile feedback.
 
 ---
 
-## 3. Server-Authoritative RPG Progression
+## 3. Server-Authoritative RPG Progression Engine
 
-The frontend **never** calculates XP, Gold, Level, Rewards, Attribute progression, Streak progression, or Boss damage. All state transitions occur within atomic database transactions on the server:
+The client **never** computes or trusts XP, Gold, Level, Attributes, Streaks, or Boss damage. All state transitions occur within atomic ACID database transactions on the server:
 
 1. **Deterministic Nonlinear Leveling Formula**:
    $$\text{requiredXP}(\text{level}) = \lfloor \text{baseXP} \times \text{growthFactor}^{(\text{level} - 1)} \rfloor$$
-   With $\text{baseXP} = 100$ and $\text{growthFactor} = 1.25$.
-   Surplus XP overflows across multiple levels in a deterministic loop.
+   With $\text{baseXP} = 100$ and $\text{growthFactor} = 1.25$. Surplus XP overflows deterministically across multiple levels.
 
-2. **Data-Driven Attribute Mapping**:
-   ```typescript
-   export const ATTRIBUTE_MAP: Record<string, string> = {
-     coding: "intellect",
-     study: "intellect",
-     fitness: "strength",
-     creative: "creativity",
-     habit: "discipline"
-   };
-   ```
+2. **Data-Driven 4-Attribute System**:
+   * **Intellect**: Coding & study tasks.
+   * **Strength**: Fitness & physical exercise.
+   * **Creativity**: Art, writing, and design tasks.
+   * **Discipline**: Habit tracking, morning routines, and streak preservation.
 
-3. **Consecutive Streak Multipliers**:
-   * Same calendar day: Maintains current streak.
-   * Consecutive day: Increments streak by $+1$, granting $+10\%$ bonus XP and $+5\%$ bonus Gold per day (up to $2.0\times$ max multiplier).
+3. **Consecutive Daily Streak Multipliers**:
+   * Same calendar day: Preserves current streak.
+   * Consecutive day: Increments streak by $+1$, granting $+10\%$ bonus XP and $+5\%$ bonus Gold per day (up to $2.0\times$ multiplier).
    * Missed day: Resets streak to 1 to preserve authentic stakes.
 
-4. **Community World Boss Raids**:
-   * Completing real-world quests strikes active World Bosses (e.g. *The Burnout Behemoth*).
-   * Deals damage equal to $\text{XP} / 2$, with a $1.5\times$ critical damage multiplier if the quest category matches the boss's listed weakness.
+4. **Community & Theme World Boss Battles**:
+   * Completing quests in the real world strikes the active realm boss with damage equal to $\text{XP} / 2$.
+   * Exploiting boss category weaknesses delivers a **1.5x Critical Strike**.
 
 ---
 
-## 4. Reusable Theme Engine
+## 4. Key Systems & Modules
 
-All 8 themes act as presentation layers consuming the same application state and shared components. Tech 1 delivers:
+### Audio Synthesizer Engine (`audioEngine.ts`)
+* Built directly on the standard **Web Audio API** — zero external audio assets required.
+* Procedural BGM tailored to each theme (Pentatonic fantasy arpeggios, Cyberpunk bass drones, Nature flutes, Shamisen scales, Lo-fi city beats).
+* Procedural sound effects: `playQuestComplete()`, `playLevelUp()`, `playAttack()`, `playHit()`, `playMeditate()`.
+* Master mute toggle and volume normalization controls.
 
-* **Theme A — Cyberpunk Synthwave**: Neo-Tokyo aesthetic, obsidian/cyan/pink palettes, monospace HUD borders, scanlines, and high-tech glitch cues.
-* **Theme B — High Fantasy Realm**: Royal medieval tavern vibe, antique gold/crimson/parchment palettes, ornate serif headings, and wax seal motifs.
-* **Theme C — Solarpunk Metropolis**: Biophilic ecology, radiant emerald/mint/amber tones, organic glassmorphic cards, and solar growth indicators.
+### Interactive Character Stage (`CharacterStage.tsx`)
+* Dedicated interactive combat ring featuring 6 theme-reactive SVG avatars (`CyberNetrunner`, `PaladinKnight`, `SolarBotanist`, `ForestDruid`, `SamuraiRonin`, `CyberArchitect`).
+* Action controls (`Strike`, `Ability`, `Focus`, `Clash`, `Victory`) with dynamic animations, floating damage numbers, and sound integration.
 
-### Shared Components
-* `QuestCard`: Renders category badges, difficulty stars, XP/Gold reward pills, action controls, and sensory completion feedback.
-* `CharacterPanel`: Displays hero title, level badge, live animated XP progress bar, gold pouch, streak counter, and 4-virtue attribute meters.
-* `BossCard`: Renders active World Boss HP bar, weakness multipliers, top strike leaders, and raid mechanics.
-* `SkillTree`: Multi-tier talent tree with prerequisite node requirements and permanent attribute enhancements.
-* `ProgressBar`: Animated Framer Motion progress bar supporting customizable gradients, percentage labels, and themes.
-* `Navbar`: Universal responsive navigation, stat monitors, theme dropdown switcher, and auth controls.
-* `Modal`: Accessible dialog supporting backdrop blur, keyboard navigation, and escape dismissals.
+### Virtual City Grid & Realm Milestones (`CityPage.tsx`)
+* Interactive isometric district grid (Residential, Commercial, Industrial, Tech Hub, Parks, Monuments).
+* 5 progressive Realm Milestones per theme (e.g., *Outpost → Village → Citadel → Metropolis → Imperial Sanctum*).
 
----
-
-## 5. API Contracts
-
-### Authentication Endpoints
-* `POST /auth/signup`: Registers new user, hashes password, creates character and starter quests.
-* `POST /auth/login`: Authenticates credentials, returns JWT and character data.
-* `POST /auth/logout`: Clears session.
-* `GET /auth/me`: Retrieves current authenticated user and character stats.
-
-### Quest Endpoints
-* `POST /quests`: Creates a new quest assigned to `req.user.id`.
-* `GET /quests`: Fetches quests strictly isolated to the authenticated user (supports `status` and `category` filters).
-* `GET /quests/:id`: Returns quest details verifying ownership.
-* `PATCH /quests/:id`: Updates quest attributes verifying ownership.
-* `DELETE /quests/:id`: Deletes quest verifying ownership.
-* `POST /quests/:id/complete`: Atomically completes quest, calculates server-authoritative XP, Gold, attributes, streaks, level-ups, and achievements.
-
-### Character & Systems
-* `GET /character`: Retrieves character stats, required XP, and attributes.
-* `PATCH /character`: Updates hero name and title.
-* `GET /character/transactions`: Retrieves XP and Gold audit log.
-* `PATCH /user/theme`: Persists selected theme (`theme-a`, `theme-b`, `theme-c`, etc.).
-* `GET /achievements`: Master achievements list with user unlock status.
-* `GET /rewards` & `POST /rewards/:id/purchase`: Reward store and inventory redemptions.
-* `GET /boss` & `POST /boss/attack`: World Boss state and battle system.
-* `GET /skills` & `POST /skills/:id/unlock`: Skill tree progression.
+### Production SEO & Accessibility
+* Exact required H1 tag: `Turn Your Real Life Into a City-Building RPG`.
+* Schema.org `SoftwareApplication` JSON-LD structured data.
+* Open Graph tags, Twitter card meta, canonical links, `robots.txt`, and `sitemap.xml`.
+* Responsive across mobile (375px), tablet (768px), and desktop (1024px+).
 
 ---
 
-## 6. Public SEO Pages
+## 5. Technology Stack
 
-* `/`: Homepage matching exact H1 (*Turn Your Real Life Into a City-Building RPG*) with Schema.org `SoftwareApplication` JSON-LD, Open Graph tags, and interactive live theme switcher.
-* `/features`: Technical breakdowns of nonlinear math, city grid expansion, and streak mechanics.
-* `/how-it-works`: 4-step walkthrough for new adventurers.
-* `/about`: Design philosophy and server-authoritative trust model.
-* `/faq`: Search-indexed knowledge base with accessible accordions.
-* `/public/robots.txt` & `/public/sitemap.xml`: Configured for maximum search engine crawlability.
+* **Frontend**: React 19, TypeScript, Tailwind CSS, Framer Motion, Lucide React, React Router v7, Canvas Confetti.
+* **Backend**: Node.js, Express, TypeScript, bcryptjs, jsonwebtoken, cors.
+* **Database**: PostgreSQL with dual-driver support:
+  * `pg` for standard PostgreSQL (AWS RDS, Supabase, Neon, local Docker).
+  * `@electric-sql/pglite` for zero-configuration, in-process persistent embedded PostgreSQL.
+* **Audio**: Procedural Web Audio API sound synthesis.
 
 ---
 
-## 7. Getting Started & Verification
+## 6. Getting Started & Verification
 
 ### Prerequisites
 * Node.js v18+ (tested on Node v24.13.0)
 * npm v9+
 
-### Installation
+### Running the Automated Test Suite
 ```bash
-# Install backend dependencies
-cd backend && npm install
-
-# Install frontend dependencies
-cd ../frontend && npm install
+# Run backend test suite (covering leveling, streaks, attributes, isolation, transactions, and theme level locks)
+npm --prefix backend test
 ```
 
-### Running Automated Test Suite
-```bash
-# Run backend test suite (covering leveling, streaks, attributes, isolation, transactions)
-npm run test:backend
-```
+### Starting the Application
 
-### Starting Development Servers
-```bash
-# Terminal 1: Start backend on http://localhost:5000
-npm run dev:backend
+1. **Start the Backend API (Port 5000)**:
+   ```bash
+   cd backend
+   npm run dev
+   ```
 
-# Terminal 2: Start frontend on http://localhost:5173
-npm run dev:frontend
-```
+2. **Start the Frontend Client (Port 5173)**:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
 
 ### Production Build
 ```bash
-# Builds both backend and frontend for production
-npm run build
+# Build backend
+npm --prefix backend run build
+
+# Build frontend
+npm --prefix frontend run build
 ```
+
+---
+
+## 7. Verification Checklist
+
+- [x] All 6 themes integrated with unique visual styles, terminologies, and audio tracks.
+- [x] Level locks enforced on both client UI and server API (Theme A: Lvl 1, B: Lvl 2, C: Lvl 3, D: Lvl 4, E: Lvl 5, F: Lvl 6).
+- [x] Server-authoritative PostgreSQL progression (no mock engine in production).
+- [x] 8 automated backend unit & integration tests passing (100% pass rate).
+- [x] TypeScript builds passing for both frontend and backend with 0 errors.
+- [x] Full responsive design verified across mobile, tablet, and desktop viewports.
+- [x] Production SEO complete (exact H1, JSON-LD, meta tags, robots.txt, sitemap.xml).

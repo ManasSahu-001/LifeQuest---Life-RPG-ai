@@ -1,7 +1,7 @@
 {
   "name": "life-rpg-monorepo",
   "version": "1.0.0",
-  "description": "Life RPG - Gamified Productivity & City-Building RPG (Tech Member 1)",
+  "description": "Life RPG - Gamified Productivity & City-Building RPG (Unified Production Release)",
   "private": true,
   "scripts": {
     "dev:backend": "npm --prefix backend run dev",
@@ -22,6 +22,6 @@
     "react",
     "express"
   ],
-  "author": "Tech Member 1",
+  "author": "Life RPG Development Team",
   "license": "MIT"
 }

@@ -77,8 +77,9 @@ export const api = {
   claimReward: (userRewardId: number) => apiClient.post(`/rewards/claims/${userRewardId}`),
 
   // World Boss
-  getBoss: () => apiClient.get('/boss'),
-  attackBoss: (damage?: number) => apiClient.post('/boss/attack', { damage }),
+  getBoss: (theme?: string) => apiClient.get('/boss', { params: theme ? { theme } : undefined }),
+  attackBoss: (damage?: number, bossId?: number) => apiClient.post('/boss/attack', { damage, bossId }),
+
 
   // Skill Tree
   getSkills: () => apiClient.get('/skills'),

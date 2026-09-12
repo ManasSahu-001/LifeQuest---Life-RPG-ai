@@ -17,6 +17,7 @@ import { api } from '../../api/client.js';
 import { ProgressBar } from '../../components/shared/ProgressBar.js';
 import { SkillTree } from '../../components/shared/SkillTree.js';
 import { Button } from '../../components/shared/Button.js';
+import { CharacterStage } from '../../components/character/CharacterStage.js';
 
 export const CharacterPage: React.FC = () => {
   const { character, refreshCharacter, updateCharacterState } = useAuth();
@@ -89,82 +90,91 @@ export const CharacterPage: React.FC = () => {
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Hero Overview Header */}
-      <div className="p-8 rounded-[var(--rpg-radius)] bg-[var(--rpg-surface)] border border-[var(--rpg-border)] shadow-[var(--rpg-glow)] relative overflow-hidden">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="flex items-center gap-6">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-[var(--rpg-radius)] bg-[var(--rpg-bg)] border-2 border-[var(--rpg-primary)] flex items-center justify-center text-[var(--rpg-primary)] shadow-[var(--rpg-glow)]">
-                <Crown className="w-10 h-10" />
+      {/* Top Grid: Hero Interactive Avatar Stage & Profile Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div className="lg:col-span-5 flex">
+          <CharacterStage />
+        </div>
+
+        <div className="lg:col-span-7 p-6 sm:p-8 rounded-[var(--rpg-radius)] bg-[var(--rpg-surface)] border border-[var(--rpg-border)] shadow-[var(--rpg-glow)] flex flex-col justify-between">
+          <div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-[var(--rpg-border)]">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-[var(--rpg-radius)] bg-[var(--rpg-bg)] border-2 border-[var(--rpg-primary)] flex items-center justify-center text-[var(--rpg-primary)] shadow-[var(--rpg-glow)]">
+                    <Crown className="w-8 h-8" />
+                  </div>
+                  <span className="absolute -bottom-2 -right-1 px-2 py-0.5 rounded text-xs font-mono font-bold bg-[var(--rpg-primary)] text-black">
+                    LVL {character.level}
+                  </span>
+                </div>
+
+                <div>
+                  {isEditingName ? (
+                    <div className="flex items-center gap-2 mb-1">
+                      <input
+                        type="text"
+                        value={nameInput}
+                        onChange={(e) => setNameInput(e.target.value)}
+                        className="px-2 py-1 text-base font-bold rounded bg-[var(--rpg-bg)] border border-[var(--rpg-border)] text-[var(--rpg-text)]"
+                      />
+                      <input
+                        type="text"
+                        value={titleInput}
+                        onChange={(e) => setTitleInput(e.target.value)}
+                        className="px-2 py-1 text-xs rounded bg-[var(--rpg-bg)] border border-[var(--rpg-border)] text-[var(--rpg-muted)]"
+                      />
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={handleSaveProfile}
+                        isLoading={isSaving}
+                        icon={<Check className="w-4 h-4" />}
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <h1 className="text-xl sm:text-2xl font-heading font-black text-[var(--rpg-text)]">
+                        {character.name}
+                      </h1>
+                      <button
+                        onClick={() => setIsEditingName(true)}
+                        className="p-1 text-[var(--rpg-muted)] hover:text-[var(--rpg-primary)]"
+                        title="Edit Name & Title"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-xs text-[var(--rpg-muted)] font-mono">{character.title}</p>
+                </div>
               </div>
-              <span className="absolute -bottom-2 -right-1 px-2 py-0.5 rounded text-xs font-mono font-bold bg-[var(--rpg-primary)] text-black">
-                LVL {character.level}
-              </span>
-            </div>
 
-            <div>
-              {isEditingName ? (
-                <div className="flex items-center gap-2 mb-1">
-                  <input
-                    type="text"
-                    value={nameInput}
-                    onChange={(e) => setNameInput(e.target.value)}
-                    className="px-2 py-1 text-base font-bold rounded bg-[var(--rpg-bg)] border border-[var(--rpg-border)] text-[var(--rpg-text)]"
-                  />
-                  <input
-                    type="text"
-                    value={titleInput}
-                    onChange={(e) => setTitleInput(e.target.value)}
-                    className="px-2 py-1 text-xs rounded bg-[var(--rpg-bg)] border border-[var(--rpg-border)] text-[var(--rpg-muted)]"
-                  />
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={handleSaveProfile}
-                    isLoading={isSaving}
-                    icon={<Check className="w-4 h-4" />}
-                  >
-                    Save
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-heading font-black text-[var(--rpg-text)]">
-                    {character.name}
-                  </h1>
-                  <button
-                    onClick={() => setIsEditingName(true)}
-                    className="p-1 text-[var(--rpg-muted)] hover:text-[var(--rpg-primary)]"
-                    title="Edit Name & Title"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              )}
-              <p className="text-xs text-[var(--rpg-muted)] font-mono">{character.title}</p>
-
-              <div className="flex items-center gap-4 mt-2 text-xs font-mono">
-                <span className="flex items-center gap-1 text-orange-400 font-bold">
+              <div className="flex items-center gap-3 text-xs font-mono">
+                <span className="flex items-center gap-1 text-orange-400 font-bold px-2.5 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20">
                   <Flame className="w-4 h-4 fill-orange-400 animate-pulse" />
-                  {character.streak_count}d Active Streak
+                  {character.streak_count}d Streak
                 </span>
-                <span className="flex items-center gap-1 text-amber-300 font-bold">
+                <span className="flex items-center gap-1 text-amber-300 font-bold px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20">
                   <Coins className="w-4 h-4 text-amber-400" />
                   {character.gold} Gold
                 </span>
               </div>
             </div>
-          </div>
 
-          <div className="w-full md:w-72 bg-[var(--rpg-bg)]/80 p-4 rounded-[var(--rpg-radius)] border border-[var(--rpg-border)]">
-            <ProgressBar
-              value={character.current_xp}
-              max={character.requiredXP}
-              label="Level Progression"
-              subLabel={`${character.current_xp} / ${character.requiredXP} XP`}
-              showPercentage={true}
-              height="md"
-            />
+            {/* XP Progression Bar */}
+            <div className="mt-5 p-4 rounded-xl bg-black/20 border border-[var(--rpg-border)]">
+              <ProgressBar
+                value={character.current_xp}
+                max={character.requiredXP}
+                label="Level Progression"
+                subLabel={`${character.current_xp} / ${character.requiredXP} XP`}
+                showPercentage={true}
+                height="lg"
+              />
+            </div>
           </div>
         </div>
       </div>

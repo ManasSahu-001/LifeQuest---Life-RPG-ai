@@ -13,12 +13,13 @@ import {
   Sparkles,
   CheckCircle,
   Trophy,
+  Lock,
 } from 'lucide-react';
 import { Button } from '../../components/shared/Button.js';
 import { useTheme } from '../../context/ThemeContext.js';
 
 export const LandingPage: React.FC = () => {
-  const { currentThemeId, setThemeId, availableThemes } = useTheme();
+  const { currentThemeId, setThemeId, availableThemes, openThemeSelector } = useTheme();
 
   return (
     <div className="relative overflow-hidden">
@@ -96,20 +97,37 @@ export const LandingPage: React.FC = () => {
                   Experience Multi-Theme Immersion
                 </h3>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 {availableThemes.map((t) => (
                   <button
                     key={t.id}
-                    onClick={() => setThemeId(t.id, false)}
-                    className={`px-3 py-1.5 rounded-[var(--rpg-radius)] text-xs font-mono font-bold transition-all ${
+                    onClick={() => {
+                      if (t.requiredLevel > 1) {
+                        openThemeSelector();
+                      } else {
+                        setThemeId(t.id, 1, false);
+                      }
+                    }}
+                    className={`px-3 py-1.5 rounded-[var(--rpg-radius)] text-xs font-mono font-bold transition-all flex items-center gap-1.5 ${
                       currentThemeId === t.id
                         ? 'bg-[var(--rpg-primary)] text-black shadow-md'
                         : 'bg-[var(--rpg-bg)] text-[var(--rpg-muted)] hover:text-[var(--rpg-text)] border border-[var(--rpg-border)]'
                     }`}
                   >
-                    {t.name}
+                    <span>{t.name}</span>
+                    {t.requiredLevel > 1 && (
+                      <span className="text-[10px] text-amber-400 font-mono flex items-center gap-0.5">
+                        <Lock className="w-2.5 h-2.5" /> Lvl {t.requiredLevel}
+                      </span>
+                    )}
                   </button>
                 ))}
+                <button
+                  onClick={openThemeSelector}
+                  className="px-3 py-1.5 rounded-[var(--rpg-radius)] text-xs font-mono text-[var(--rpg-primary)] hover:bg-[var(--rpg-primary)]/10 border border-[var(--rpg-primary)]/40 transition-all"
+                >
+                  View Matrix →
+                </button>
               </div>
             </div>
 

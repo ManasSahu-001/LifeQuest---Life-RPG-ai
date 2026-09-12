@@ -3,6 +3,7 @@ import { db } from '../src/db/index.js';
 import { seedDatabase } from '../src/db/seed.js';
 import { AuthService } from '../src/services/authService.js';
 import { RpgEngine } from '../src/services/rpgEngine.js';
+import { ThemeController } from '../src/controllers/themeController.js';
 
 let passed = 0;
 let failed = 0;
@@ -186,10 +187,58 @@ async function runAllTests() {
     assert.ok(txLog.rows.length >= 2, 'Both XP and Gold transactions must be logged in database');
   });
 
-  await test('Theme persistence', async () => {
-    await db.query('UPDATE users SET theme = $1 WHERE id = $2', ['theme-b', userAId]);
-    const updated = await db.query('SELECT theme FROM users WHERE id = $1', [userAId]);
-    assert.strictEqual(updated.rows[0].theme, 'theme-b');
+  await test('Theme persistence and level lock validation', async () => {
+    // User A earned XP in previous test and reached level 2
+    const char = await db.query('SELECT level FROM characters WHERE user_id = $1', [userAId]);
+    assert.strictEqual(char.rows[0].level, 2, 'User A should be level 2 after quest completion');
+
+    // Helper to simulate Express request/response
+    const mockReqRes = (userId: number, theme: string) => {
+      let code = 200;
+      let body: any = null;
+      const req: any = { user: { id: userId }, body: { theme } };
+      const res: any = {
+        status(c: number) {
+          code = c;
+          return this;
+        },
+        json(b: any) {
+          body = b;
+          return this;
+        },
+      };
+      return { req, res, getStatus: () => code, getBody: () => body };
+    };
+
+    // 1. Setting Theme B (Level 2) should SUCCEED for Level 2 character
+    const callB = mockReqRes(userAId, 'theme-b');
+    await ThemeController.updateTheme(callB.req, callB.res);
+    assert.strictEqual(callB.getStatus(), 200, 'Theme B should succeed at Level 2');
+    assert.strictEqual(callB.getBody().success, true);
+    assert.strictEqual(callB.getBody().theme, 'theme-b');
+
+    // 2. Setting Theme C (Level 3) should FAIL with 403 Forbidden for Level 2 character
+    const callC = mockReqRes(userAId, 'theme-c');
+    await ThemeController.updateTheme(callC.req, callC.res);
+    assert.strictEqual(callC.getStatus(), 403, 'Theme C must return 403 when user is Level 2');
+    assert.strictEqual(callC.getBody().success, false);
+    assert.ok(callC.getBody().error.includes('Theme locked!'), 'Error should state Theme locked');
+
+    // 3. Setting Theme F (Level 6) should also FAIL with 403 Forbidden
+    const callF = mockReqRes(userAId, 'theme-f');
+    await ThemeController.updateTheme(callF.req, callF.res);
+    assert.strictEqual(callF.getStatus(), 403, 'Theme F must return 403 when user is Level 2');
+    assert.strictEqual(callF.getBody().success, false);
+
+    // 4. Level up character to Level 6 and verify Theme F now SUCCEEDS
+    await db.query('UPDATE characters SET level = 6 WHERE user_id = $1', [userAId]);
+    const callFUnlocked = mockReqRes(userAId, 'theme-f');
+    await ThemeController.updateTheme(callFUnlocked.req, callFUnlocked.res);
+    assert.strictEqual(callFUnlocked.getStatus(), 200, 'Theme F must succeed once character reaches Level 6');
+    assert.strictEqual(callFUnlocked.getBody().theme, 'theme-f');
+
+    // Restore character level to 2
+    await db.query('UPDATE characters SET level = 2 WHERE user_id = $1', [userAId]);
   });
 
   console.log('\n========================================');

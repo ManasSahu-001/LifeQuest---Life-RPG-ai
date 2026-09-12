@@ -2,20 +2,24 @@ import { ThemeDefinition } from './types.js';
 
 export const themeB: ThemeDefinition = {
   id: 'theme-b',
+  code: 'Theme B',
   name: 'High Fantasy Realm',
   subtitle: 'Medieval Tavern & Royal Heraldry',
   badge: 'ROYAL GUILD',
+  icon: 'Shield',
+  requiredLevel: 2,
+  unlockTitle: 'Apprentice Adventurer',
   colors: {
     bg: '#12100e',
     surface: '#1c1814',
     surfaceHover: '#28221b',
-    border: '#d4af3740',
-    primary: '#d4af37', // Antique Gold
+    border: 'rgba(212, 175, 55, 0.3)',
+    primary: '#d4af37',
     primaryHover: '#e6c35c',
-    secondary: '#8b1e1e', // Imperial Crimson
-    accent: '#3a7d44', // Forest Ranger Green
+    secondary: '#8b1e1e',
+    accent: '#3a7d44',
     gold: '#f0c048',
-    text: '#f5ecd7', // Parchment ivory
+    text: '#f5ecd7',
     muted: '#8f8373',
     cardGlow: 'rgba(212, 175, 55, 0.22)',
     gradientBg: 'radial-gradient(ellipse at top, #241c14 0%, #12100e 75%)',
@@ -26,10 +30,46 @@ export const themeB: ThemeDefinition = {
     monoFont: '"Courier New", monospace',
   },
   effects: {
-    borderRadius: '0.6rem', // Rounded heraldic shields
+    borderRadius: '0.6rem',
     cardBorderWidth: '2px',
     glassmorphic: false,
     scanlines: false,
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(212, 175, 55, 0.05)',
   },
+  terminology: {
+    quest: 'Guild Bounty',
+    quests: 'Heroic Quests',
+    boss: 'Ancient Wyrm',
+    character: 'Royal Paladin',
+    skills: 'Chivalric Feats',
+    xp: 'Valor Renown',
+    currency: 'Gold Sovereigns',
+    realmProgress: 'Castle Citadel',
+    realmMetric: 'Bastion Tier',
+  },
+  hero: {
+    name: 'Sir Valerius',
+    class: 'High Paladin Knight',
+    avatarEffect: 'golden-holy-radiance',
+    weapon: 'Runed Sun-Forged Greatsword',
+    gearSlots: ['Crown of Valor', 'Gilded Plate of the Sun', 'Shield of Saint Agnes', 'Pendant of Grace'],
+  },
+  boss: {
+    name: 'Dread Dragon Fafnir',
+    title: 'Scourge of the High Realm',
+    maxHp: 1400,
+    avatarType: 'dragon',
+    flavor: 'An ancient wyrm nesting on unearned treasures. Defeat it with deep study and knowledge!',
+  },
+  worldProgress: {
+    title: 'Royal Fortress & Grand Citadel',
+    description: 'Raise stone ramparts, construct cathedral spires, and illuminate stained glass halls as your quests succeed.',
+  },
+  preview: {
+    bannerGradient: 'from-amber-950 via-yellow-950 to-neutral-950',
+    cardGradient: 'from-amber-500/10 via-yellow-500/5 to-transparent',
+    tag: 'Theme B',
+    features: ['Ornate medieval heraldry', 'Parchment and antique gold', 'Chivalric valor progression'],
+  },
 };
+

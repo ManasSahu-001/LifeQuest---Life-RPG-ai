@@ -27,9 +27,8 @@ import { Button } from './Button.js';
 
 export const Navbar: React.FC = () => {
   const { user, character, isAuthenticated, logout } = useAuth();
-  const { currentThemeId, setThemeId, availableThemes } = useTheme();
+  const { currentThemeId, openThemeSelector } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
   const [isBgmActive, setIsBgmActive] = useState(() => audioEngine.getIsBgmPlaying());
   const [isMuted, setIsMuted] = useState(() => audioEngine.getIsMuted());
   const [bgmVolume, setBgmVolume] = useState(() => audioEngine.getBgmVolume());
@@ -210,55 +209,16 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
-            {/* Theme Selector Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setThemeDropdownOpen(!themeDropdownOpen)}
-                className="p-2 rounded-[var(--rpg-radius)] border border-[var(--rpg-border)] bg-[var(--rpg-surface)] text-[var(--rpg-text)] hover:border-[var(--rpg-primary)] hover:shadow-[var(--rpg-glow)] transition-all flex items-center gap-1.5 text-xs font-mono"
-                title="Change Theme"
-                aria-label="Change Theme"
-              >
-                <Palette className="w-4 h-4 text-[var(--rpg-primary)]" />
-                <span className="hidden sm:inline uppercase">{currentThemeId}</span>
-              </button>
-
-              <AnimatePresence>
-                {themeDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    className="absolute right-0 mt-2 w-56 rounded-[var(--rpg-radius)] bg-[var(--rpg-surface)] border border-[var(--rpg-border)] shadow-xl py-2 z-50"
-                  >
-                    <div className="px-3 py-1.5 text-xs font-mono uppercase text-[var(--rpg-muted)] border-b border-[var(--rpg-border)] mb-1">
-                      Choose Theme
-                    </div>
-                    {availableThemes.map((t) => (
-                      <button
-                        key={t.id}
-                        onClick={() => {
-                          setThemeId(t.id);
-                          setThemeDropdownOpen(false);
-                        }}
-                        className={`w-full px-3 py-2 text-left text-xs flex items-center justify-between transition-colors ${
-                          currentThemeId === t.id
-                            ? 'bg-[var(--rpg-primary)]/15 text-[var(--rpg-primary)] font-bold'
-                            : 'text-[var(--rpg-text)] hover:bg-[var(--rpg-surface-hover)]'
-                        }`}
-                      >
-                        <div>
-                          <div className="font-semibold">{t.name}</div>
-                          <div className="text-[10px] text-[var(--rpg-muted)]">{t.badge}</div>
-                        </div>
-                        {currentThemeId === t.id && (
-                          <div className="w-2 h-2 rounded-full bg-[var(--rpg-primary)] shadow-[0_0_6px_var(--rpg-primary)]" />
-                        )}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            {/* Theme Matrix Modal Trigger */}
+            <button
+              onClick={openThemeSelector}
+              className="p-2 rounded-[var(--rpg-radius)] border border-[var(--rpg-border)] bg-[var(--rpg-surface)] text-[var(--rpg-text)] hover:border-[var(--rpg-primary)] hover:shadow-[var(--rpg-glow)] transition-all flex items-center gap-1.5 text-xs font-mono group"
+              title="Open Theme Matrix & Level Unlocks"
+              aria-label="Open Theme Matrix & Level Unlocks"
+            >
+              <Palette className="w-4 h-4 text-[var(--rpg-primary)] group-hover:rotate-45 transition-transform" />
+              <span className="hidden sm:inline uppercase">{currentThemeId}</span>
+            </button>
 
             {/* Auth Buttons */}
             {isAuthenticated ? (
@@ -316,6 +276,16 @@ export const Navbar: React.FC = () => {
                 {link.label}
               </Link>
             ))}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openThemeSelector();
+              }}
+              className="w-full text-left px-3 py-2 rounded text-sm text-[var(--rpg-text)] hover:bg-[var(--rpg-surface)] flex items-center gap-2"
+            >
+              <Palette className="w-4 h-4 text-[var(--rpg-primary)]" />
+              <span>Theme Matrix ({currentThemeId.toUpperCase()})</span>
+            </button>
             {!isAuthenticated && (
               <div className="pt-3 flex gap-2">
                 <Link to="/login" className="flex-1" onClick={() => setMobileMenuOpen(false)}>

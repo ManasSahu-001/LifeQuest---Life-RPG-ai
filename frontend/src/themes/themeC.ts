@@ -2,18 +2,22 @@ import { ThemeDefinition } from './types.js';
 
 export const themeC: ThemeDefinition = {
   id: 'theme-c',
+  code: 'Theme C',
   name: 'Solarpunk Metropolis',
   subtitle: 'Biophilic Glass & Radiant Flora',
   badge: 'ECO-HARVEST',
+  icon: 'Sun',
+  requiredLevel: 3,
+  unlockTitle: 'Biophilic Initiate',
   colors: {
     bg: '#08140f',
     surface: '#0f241c',
     surfaceHover: '#163328',
-    border: '#10b98133',
-    primary: '#10b981', // Radiant Emerald
+    border: 'rgba(16, 185, 129, 0.25)',
+    primary: '#10b981',
     primaryHover: '#34d399',
-    secondary: '#f59e0b', // Solar Amber
-    accent: '#06b6d4', // Pure Water Cyan
+    secondary: '#f59e0b',
+    accent: '#06b6d4',
     gold: '#fbbf24',
     text: '#e6f7f0',
     muted: '#6a9683',
@@ -26,10 +30,46 @@ export const themeC: ThemeDefinition = {
     monoFont: '"Fira Code", monospace',
   },
   effects: {
-    borderRadius: '1rem', // Smooth organic curves
+    borderRadius: '1rem',
     cardBorderWidth: '1px',
     glassmorphic: true,
     scanlines: false,
     boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37), 0 0 15px -3px rgba(16, 185, 129, 0.2)',
   },
+  terminology: {
+    quest: 'Ecology Objective',
+    quests: 'Civic Blueprints',
+    boss: 'Smog Colossus',
+    character: 'Bio-Architect Engineer',
+    skills: 'Ecosystem Permaculture',
+    xp: 'Solar Lumens',
+    currency: 'Verdant Credits',
+    realmProgress: 'Solar Canopy Expansion',
+    realmMetric: 'Biosphere Purity',
+  },
+  hero: {
+    name: 'Aria Vane',
+    class: 'Solar Botanic Architect',
+    avatarEffect: 'floating-leaves-amber',
+    weapon: 'Photonic Resonance Staff',
+    gearSlots: ['Solar Prism Visor', 'Living Biosuit', 'Seed Synthesizer', 'Perennial Seed Core'],
+  },
+  boss: {
+    name: 'The Smog Colossus',
+    title: 'Choker of the Solar Canopy',
+    maxHp: 1100,
+    avatarType: 'colossus',
+    flavor: 'Toxic industrial haze threatening the biophilic metropolis. Slay it with daily discipline!',
+  },
+  worldProgress: {
+    title: 'Verdant Biophilic Skyline',
+    description: 'Construct vertical algae bioreactors, hydroponic sky gardens, and solar collection domes as tasks complete.',
+  },
+  preview: {
+    bannerGradient: 'from-emerald-950 via-teal-950 to-green-950',
+    cardGradient: 'from-emerald-500/10 via-amber-500/5 to-transparent',
+    tag: 'Theme C',
+    features: ['Biophilic glassmorphism', 'Radiant solar emerald palette', 'Ecological urban synthesis'],
+  },
 };
+

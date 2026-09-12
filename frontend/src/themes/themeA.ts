@@ -2,14 +2,18 @@ import { ThemeDefinition } from './types.js';
 
 export const themeA: ThemeDefinition = {
   id: 'theme-a',
+  code: 'Theme A',
   name: 'Cyberpunk Synthwave',
   subtitle: 'Neo-Tokyo High-Tech HUD',
   badge: 'CYBER-GRID',
+  icon: 'Cpu',
+  requiredLevel: 1,
+  unlockTitle: 'Starter Realm',
   colors: {
     bg: '#08090e',
     surface: '#0e111a',
     surfaceHover: '#161a28',
-    border: '#00f0ff33',
+    border: 'rgba(0, 240, 255, 0.25)',
     primary: '#00f0ff',
     primaryHover: '#33f3ff',
     secondary: '#ff007f',
@@ -26,10 +30,46 @@ export const themeA: ThemeDefinition = {
     monoFont: '"JetBrains Mono", "Fira Code", monospace',
   },
   effects: {
-    borderRadius: '0.25rem', // Angular Cyber aesthetic
+    borderRadius: '0.25rem',
     cardBorderWidth: '1px',
     glassmorphic: true,
     scanlines: true,
     boxShadow: '0 0 25px -5px rgba(0, 240, 255, 0.2)',
   },
+  terminology: {
+    quest: 'Data Bounty',
+    quests: 'Matrix Protocols',
+    boss: 'Glitch Overlord',
+    character: 'Netrunner Operative',
+    skills: 'Neural Augments',
+    xp: 'Memory Bytes',
+    currency: 'Crypto Credits',
+    realmProgress: 'Mainframe Uplink',
+    realmMetric: 'Core Sync %',
+  },
+  hero: {
+    name: 'Kaelen Vex',
+    class: 'Ghost Netrunner',
+    avatarEffect: 'cyan-cyber-glitch',
+    weapon: 'Mono-filament Cyberblade',
+    gearSlots: ['Neural Interface Visor', 'Subdermal Carbon Mesh', 'Overclocked Cyberdeck', 'Quantum Cipher'],
+  },
+  boss: {
+    name: 'The Procrastination Behemoth',
+    title: 'Devourer of Deadlines',
+    maxHp: 1000,
+    avatarType: 'cyber-titan',
+    flavor: 'A glitch anomaly formed from pending tasks and fragmented code.',
+  },
+  worldProgress: {
+    title: 'Neo-Tokyo Mainframe Grid',
+    description: 'Overclock quantum nodes and expand neon skyscraper servers as daily tasks execute.',
+  },
+  preview: {
+    bannerGradient: 'from-cyan-950 via-slate-900 to-fuchsia-950',
+    cardGradient: 'from-cyan-500/10 via-fuchsia-500/5 to-transparent',
+    tag: 'Theme A',
+    features: ['Scanline HUD overlay', 'Neon synthwave glow', 'Cybernetic neural skill tree'],
+  },
 };
+

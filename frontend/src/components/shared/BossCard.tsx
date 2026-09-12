@@ -33,7 +33,7 @@ export const BossCard: React.FC = () => {
 
   const fetchBoss = async () => {
     try {
-      const res = await api.getBoss();
+      const res = await api.getBoss(currentThemeId);
       if (res.data.success) {
         setBoss(res.data.boss);
         setContributors(res.data.contributors || []);
@@ -47,7 +47,8 @@ export const BossCard: React.FC = () => {
 
   useEffect(() => {
     fetchBoss();
-  }, []);
+  }, [currentThemeId]);
+
 
   const handleManualStrike = async () => {
     if (!boss || !boss.is_active || isAttacking) return;

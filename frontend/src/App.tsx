@@ -25,10 +25,15 @@ import { InventoryPage } from './pages/app/InventoryPage.js';
 import { AchievementsPage } from './pages/app/AchievementsPage.js';
 import { BossPage } from './pages/app/BossPage.js';
 
+import { ParticleCanvas } from './components/shared/ParticleCanvas.js';
+import { ThemeSelector } from './components/shared/ThemeSelector.js';
+
 export const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <ParticleCanvas />
+        <ThemeSelector />
         <BrowserRouter>
           <Routes>
             {/* Public SEO Routes */}

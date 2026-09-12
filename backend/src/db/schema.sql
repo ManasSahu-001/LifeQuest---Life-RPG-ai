@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS xp_transactions (
 -- 10. World Boss & Battle State
 CREATE TABLE IF NOT EXISTS bosses (
     id SERIAL PRIMARY KEY,
+    theme VARCHAR(50) DEFAULT 'theme-a',
     name VARCHAR(100) NOT NULL,
     title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
@@ -130,6 +131,8 @@ CREATE TABLE IF NOT EXISTS bosses (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+ALTER TABLE bosses ADD COLUMN IF NOT EXISTS theme VARCHAR(50) DEFAULT 'theme-a';
 
 -- 11. User Boss Attacks
 CREATE TABLE IF NOT EXISTS boss_attacks (
