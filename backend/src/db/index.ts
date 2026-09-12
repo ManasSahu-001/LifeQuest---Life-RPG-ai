@@ -35,13 +35,40 @@ class DatabaseManager {
       console.log('[DB] Connected successfully to remote PostgreSQL.');
     } else {
       console.log('[DB] DATABASE_URL not specified. Initializing embedded PostgreSQL (PGlite)...');
-      const dataDir = config.pgliteDir;
-      if (!fs.existsSync(dataDir)) {
-        fs.mkdirSync(dataDir, { recursive: true });
+      const isTest = process.env.NODE_ENV === 'test';
+      if (isTest) {
+        this.pglite = new PGlite();
+        await this.pglite.waitReady;
+        console.log('[DB] Embedded PostgreSQL ready in in-memory test mode.');
+      } else {
+        const dataDir = config.pgliteDir;
+        if (!fs.existsSync(dataDir)) {
+          fs.mkdirSync(dataDir, { recursive: true });
+        } else {
+          // Clean stale lock files from unexpected termination
+          const pidFile = path.join(dataDir, 'postmaster.pid');
+          if (fs.existsSync(pidFile)) {
+            try { fs.unlinkSync(pidFile); } catch (e) {}
+          }
+          const sockLock = path.join(dataDir, '.s.PGSQL.5432.lock.out');
+          if (fs.existsSync(sockLock)) {
+            try { fs.unlinkSync(sockLock); } catch (e) {}
+          }
+        }
+        try {
+          this.pglite = new PGlite(dataDir);
+          await this.pglite.waitReady;
+        } catch (initErr) {
+          console.warn('[DB] Persistent storage recovery required, reinitializing clean store...');
+          try {
+            fs.rmSync(dataDir, { recursive: true, force: true });
+            fs.mkdirSync(dataDir, { recursive: true });
+          } catch (e) {}
+          this.pglite = new PGlite(dataDir);
+          await this.pglite.waitReady;
+        }
+        console.log(`[DB] Embedded PostgreSQL ready. Persistent storage at: ${dataDir}`);
       }
-      this.pglite = new PGlite(dataDir);
-      await this.pglite.waitReady;
-      console.log(`[DB] Embedded PostgreSQL ready. Persistent storage at: ${dataDir}`);
     }
 
     await this.applySchema();

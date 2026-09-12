@@ -30,8 +30,8 @@ export function createRateLimiter(options: RateLimitOptions) {
   }
 
   return (req: Request, res: Response, next: NextFunction): void => {
-    // In test environment, skip rate limiting so test runners aren't throttled
-    if (process.env.NODE_ENV === 'test') {
+    // In test or development environment, skip rate limiting so dev workflows aren't throttled
+    if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
       next();
       return;
     }

@@ -307,6 +307,22 @@ export const CityPage: React.FC = () => {
                   { pct: 80, title: 'Photonic Transit Grid', desc: 'Zero-emission solar gliders connect forest districts.' },
                   { pct: 100, title: 'Living Eco-Arcology', desc: 'Total balance of nature and civilization achieved.' },
                 ];
+              } else if (currentThemeId === 'theme-g') {
+                return [
+                  { pct: 20, title: 'Consecrate Crypt Vaults', desc: 'Ancient stone sarcophagi are blessed against dark curses.' },
+                  { pct: 40, title: 'Light Spectral Braziers', desc: 'Emerald ghost-fire illuminates dark Victorian catacombs.' },
+                  { pct: 60, title: 'Bone Reliquary Altar', desc: 'Sacred ancestral relics channel restorative necromantic wards.' },
+                  { pct: 80, title: 'Shatter Phylactery Seals', desc: 'Lich King Malathrax dark bond over the cemetery weakens.' },
+                  { pct: 100, title: 'Hallowed Sanctum of Souls', desc: 'Eldritch curse broken. Peace returns to the necropolis.' },
+                ];
+              } else if (currentThemeId === 'theme-h') {
+                return [
+                  { pct: 20, title: 'Hawkins Lab Antenna', desc: 'Analog radio towers scan interdimensional rift frequencies.' },
+                  { pct: 40, title: 'Castle Byers Fort', desc: 'Reinforced wilderness shelter protects against shadow beasts.' },
+                  { pct: 60, title: 'Arcade Command Hub', desc: 'High-score CRT cabinets power the underground party radar.' },
+                  { pct: 80, title: 'Sensory Deprivation Chamber', desc: 'Psionic mind-focus amplifier tracks the Mind Flayer.' },
+                  { pct: 100, title: 'Hawkins Gate Sealed', desc: 'The Upside Down rift is closed. Hawkins 1984 saved.' },
+                ];
               } else {
                 return [
                   { pct: 20, title: 'Quantum Subnet Uplink', desc: 'Optic nodes connect to the underground netrunner grid.' },

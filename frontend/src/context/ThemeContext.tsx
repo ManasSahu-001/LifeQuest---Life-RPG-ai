@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { THEMES, DEFAULT_THEME_ID, getTheme, normalizeThemeId, isThemeUnlocked, ThemeDefinition } from '../themes/index.js';
 import { api } from '../api/client.js';
 import { audioEngine } from '../services/audioEngine.js';
@@ -9,12 +9,14 @@ interface ThemeContextType {
   setThemeId: (
     themeId: string,
     userLevelOrPersist?: number | boolean,
-    persist?: boolean
+    persist?: boolean,
+    bypassLevelCheck?: boolean
   ) => Promise<{ success: boolean; error?: string }>;
   switchTheme: (
     themeId: string,
     userLevelOrPersist?: number | boolean,
-    persist?: boolean
+    persist?: boolean,
+    bypassLevelCheck?: boolean
   ) => Promise<{ success: boolean; error?: string }>;
   availableThemes: ThemeDefinition[];
   isThemeSelectorOpen: boolean;
@@ -40,16 +42,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('liferpg_theme', currentThemeId);
   }, [currentThemeId]);
 
-  const checkUnlocked = (themeId: string, userLevel = 1) => {
+  const checkUnlocked = useCallback((themeId: string, userLevel = 1) => {
     return isThemeUnlocked(themeId, userLevel);
-  };
+  }, []);
 
-  const setThemeId = async (
+  const setThemeId = useCallback(async (
     themeId: string,
     userLevelOrPersist?: number | boolean,
-    persist?: boolean
+    persist?: boolean,
+    bypassLevelCheck?: boolean
   ): Promise<{ success: boolean; error?: string }> => {
-    let userLevel = 1;
+    let userLevel: number | undefined;
     let shouldPersist = true;
 
     if (typeof userLevelOrPersist === 'boolean') {
@@ -64,7 +67,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const norm = normalizeThemeId(themeId);
     const targetTheme = getTheme(norm);
 
-    if (userLevel < targetTheme.requiredLevel) {
+    // Only enforce level lock if userLevel was explicitly supplied as a number and bypassLevelCheck is not true
+    if (!bypassLevelCheck && typeof userLevel === 'number' && userLevel < targetTheme.requiredLevel) {
       return {
         success: false,
         error: `Theme locked! "${targetTheme.name}" unlocks at Level ${targetTheme.requiredLevel}. (Your Level: ${userLevel})`,
@@ -72,12 +76,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     setIsTransitioning(true);
-    setCurrentThemeId(norm);
     document.documentElement.setAttribute('data-theme', norm);
     localStorage.setItem('liferpg_theme', norm);
-
-    // Crossfade theme background audio
     audioEngine.switchTheme(norm);
+    setCurrentThemeId(norm);
 
     setTimeout(() => {
       setIsTransitioning(false);
@@ -92,7 +94,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     return { success: true };
-  };
+  }, []);
 
 
   return (

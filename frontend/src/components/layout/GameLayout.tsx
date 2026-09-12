@@ -28,9 +28,9 @@ export const GameLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--rpg-bg)] text-[var(--rpg-text)] relative selection:bg-[var(--rpg-primary)] selection:text-black">
+    <div className="min-h-screen flex flex-col bg-transparent text-[var(--rpg-text)] relative selection:bg-[var(--rpg-primary)] selection:text-black">
       {/* Theme specific visual overlay */}
-      <div className="theme-overlay fixed inset-0 z-0 pointer-events-none" />
+      <div className="theme-overlay fixed inset-0 z-20 pointer-events-none" />
 
       {/* Main Navbar */}
       <Navbar />

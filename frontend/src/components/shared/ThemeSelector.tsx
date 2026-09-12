@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Palette,
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext.js';
 import { useAuth } from '../../context/AuthContext.js';
+import { api } from '../../api/client.js';
 import { audioEngine } from '../../services/audioEngine.js';
 import { ThemeDefinition } from '../../themes/types.js';
 
@@ -46,24 +47,47 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen: propIsOpen
   } = useTheme();
   const { character } = useAuth();
   const [lockedNotice, setLockedNotice] = useState<string | null>(null);
+  const [ownedThemeIds, setOwnedThemeIds] = useState<Set<string>>(new Set(['theme-a']));
 
   const isOpen = propIsOpen !== undefined ? propIsOpen : isThemeSelectorOpen;
   const handleClose = propOnClose || closeThemeSelector;
 
   const userLevel = character?.level || 1;
 
+  useEffect(() => {
+    if (isOpen) {
+      api
+        .getEconomy()
+        .then((res) => {
+          if (res.data?.shop) {
+            const owned = new Set<string>(['theme-a']);
+            res.data.shop.forEach((item: any) => {
+              if (item.type === 'theme' && item.isOwned && item.themeId) {
+                owned.add(item.themeId);
+              }
+            });
+            setOwnedThemeIds(owned);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isOpen]);
+
   const handleSelect = async (theme: ThemeDefinition) => {
-    if (userLevel < theme.requiredLevel) {
+    const isPurchased = ownedThemeIds.has(theme.id);
+    const isUnlocked = isPurchased || userLevel >= theme.requiredLevel;
+
+    if (!isUnlocked) {
       audioEngine.playHit();
       setLockedNotice(
-        `🔒 ${theme.name} is locked! Requires Character Level ${theme.requiredLevel}. You are Level ${userLevel}. Complete more quests to unlock this realm!`
+        `🔒 ${theme.name} is locked! Requires Character Level ${theme.requiredLevel} or unlock it in the Treasury Shop. You are Level ${userLevel}. Complete more quests to unlock this realm!`
       );
       setTimeout(() => setLockedNotice(null), 4000);
       return;
     }
 
     audioEngine.playLevelUp();
-    await setThemeId(theme.id, userLevel, true);
+    await setThemeId(theme.id, isPurchased ? undefined : userLevel, true, isPurchased);
     handleClose();
   };
 
@@ -134,7 +158,8 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen: propIsOpen
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-1">
             {availableThemes.map((t) => {
               const isSelected = currentThemeId === t.id;
-              const isUnlocked = userLevel >= t.requiredLevel;
+              const isPurchased = ownedThemeIds.has(t.id);
+              const isUnlocked = isPurchased || userLevel >= t.requiredLevel;
               const IconComponent = THEME_ICONS[t.icon] || Palette;
               const progressPct = Math.min(100, Math.round((userLevel / t.requiredLevel) * 100));
 
@@ -167,6 +192,10 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen: propIsOpen
                       {isSelected ? (
                         <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[var(--rpg-primary)] bg-[var(--rpg-primary)]/20 px-2 py-0.5 rounded-full">
                           <Check className="w-3 h-3" /> Active
+                        </span>
+                      ) : isPurchased ? (
+                        <span className="text-[11px] font-semibold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+                          Owned
                         </span>
                       ) : isUnlocked ? (
                         <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
@@ -230,7 +259,7 @@ export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen: propIsOpen
                         </div>
                       ) : (
                         <span className="text-[10px] text-[var(--rpg-muted)] font-mono">
-                          {t.hero?.class || 'Hero'}
+                          {isPurchased && userLevel < t.requiredLevel ? 'Treasury License' : t.hero?.class || 'Hero'}
                         </span>
                       )}
                     </div>

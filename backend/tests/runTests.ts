@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'test';
 import assert from 'node:assert';
 import { db } from '../src/db/index.js';
 import { seedDatabase } from '../src/db/seed.js';

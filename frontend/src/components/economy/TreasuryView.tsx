@@ -16,6 +16,8 @@ import {
   Loader2,
   Sparkles,
   ShoppingBag,
+  Zap,
+  Terminal,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -79,7 +81,12 @@ export const TreasuryView: React.FC = () => {
     // If theme item, switch realm!
     if (item.type === 'theme' && item.themeId) {
       try {
-        await switchTheme(item.themeId);
+        const themeRes = await switchTheme(item.themeId, undefined, true, true);
+        if (themeRes && !themeRes.success) {
+          showToast(themeRes.error || 'Theme switch failed.', 'error');
+          setEquippingKey(null);
+          return;
+        }
         setMessage(`Realm activated: ${item.name}!`);
         showToast(`Realm activated: ${item.name}!`, 'realm');
         setTimeout(() => setMessage(''), 4000);
@@ -108,6 +115,8 @@ export const TreasuryView: React.FC = () => {
       case 'shield': return Shield;
       case 'crown': return Crown;
       case 'gem': return Gem;
+      case 'zap': return Zap;
+      case 'terminal': return Terminal;
       default: return Sparkles;
     }
   };
@@ -165,27 +174,29 @@ export const TreasuryView: React.FC = () => {
         {shopData?.shop?.map((item: any) => {
           const IconComp = getIcon(item.icon);
           const isOwned = item.isOwned;
-          const isEquipped = item.isEquipped || (item.themeId && currentThemeId === item.themeId);
+          const isEquipped = item.themeId ? currentThemeId === item.themeId : item.isEquipped;
           const canAfford = userGold >= item.cost;
 
           return (
             <div
               key={item.key}
               className={`p-5 rounded-xl border flex flex-col justify-between transition-all ${
-                isOwned
-                  ? 'bg-slate-900/50 border-cyan-500/30'
+                isEquipped
+                  ? 'bg-[var(--rpg-surface)] border-[var(--rpg-primary)] shadow-[var(--rpg-glow)] ring-1 ring-[var(--rpg-primary)]/50'
+                  : isOwned
+                  ? 'bg-[var(--rpg-surface)]/80 border-[var(--rpg-border)] hover:border-[var(--rpg-primary)]/70 hover:shadow-[var(--rpg-glow)]'
                   : canAfford
-                  ? 'bg-[var(--rpg-surface)] border-[var(--rpg-border)] hover:border-[var(--rpg-primary)]/60'
-                  : 'bg-slate-950/60 border-slate-800 opacity-60'
+                  ? 'bg-[var(--rpg-surface)]/60 border-[var(--rpg-border)]/70 hover:border-[var(--rpg-primary)]/60'
+                  : 'bg-black/30 border-white/5 opacity-60'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-[var(--rpg-primary)]">
+                  <div className="p-2.5 rounded-xl bg-[var(--rpg-primary)]/15 border border-[var(--rpg-primary)]/30 text-[var(--rpg-primary)]">
                     <IconComp className="w-5 h-5" />
                   </div>
                   {isOwned ? (
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-950 border border-cyan-700 text-cyan-300">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[var(--rpg-primary)]/20 border border-[var(--rpg-primary)]/40 text-[var(--rpg-primary)]">
                       Owned
                     </span>
                   ) : (
@@ -207,10 +218,10 @@ export const TreasuryView: React.FC = () => {
                   <button
                     onClick={() => handleEquip(item)}
                     disabled={equippingKey === item.key}
-                    className={`w-full py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition-colors ${
+                    className={`w-full py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition-all ${
                       isEquipped
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                        ? 'bg-[var(--rpg-primary)] text-black shadow-[var(--rpg-glow)] font-black'
+                        : 'bg-white/10 hover:bg-white/20 text-[var(--rpg-text)] border border-[var(--rpg-border)] hover:border-[var(--rpg-primary)]'
                     }`}
                   >
                     {isEquipped ? (
