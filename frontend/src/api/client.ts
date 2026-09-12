@@ -31,8 +31,11 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // If token expired, clear it
+      // If token expired or session invalid, clear and notify UI
       localStorage.removeItem('liferpg_token');
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('auth:unauthorized'));
+      }
     }
     return Promise.reject(error);
   }

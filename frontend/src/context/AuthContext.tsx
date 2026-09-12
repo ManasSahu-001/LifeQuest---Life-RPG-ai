@@ -79,6 +79,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     loadUser();
+
+    const handleUnauthorized = () => {
+      localStorage.removeItem('liferpg_token');
+      setToken(null);
+      setUser(null);
+      setCharacter(null);
+    };
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
