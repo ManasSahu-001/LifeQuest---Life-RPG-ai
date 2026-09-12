@@ -192,19 +192,20 @@ export const Navbar: React.FC = () => {
               </button>
 
               {/* Volume Slider */}
-              <div className="hidden xl:flex items-center gap-1 pl-1">
+              <div className="hidden sm:flex items-center gap-1.5 pl-1.5 border-l border-[var(--rpg-border)]">
                 <input
                   type="range"
                   min="0"
-                  max="1.5"
+                  max="2.0"
                   step="0.05"
                   value={bgmVolume}
                   onChange={handleVolumeChange}
-                  className="w-16 h-1 bg-[var(--rpg-border)] rounded-lg appearance-none cursor-pointer accent-[var(--rpg-primary)]"
-                  title={`Volume: ${Math.round((bgmVolume / 1) * 100)}%`}
+                  className="w-16 sm:w-20 h-1.5 bg-[var(--rpg-border)] rounded-lg appearance-none cursor-pointer accent-[var(--rpg-primary)]"
+                  title={`BGM Volume: ${Math.round(bgmVolume * 100)}%`}
+                  aria-label="Background Music Volume"
                 />
-                <span className="text-[9px] font-mono text-[var(--rpg-muted)] w-6">
-                  {Math.round((bgmVolume / 1) * 100)}%
+                <span className="text-[10px] font-mono text-[var(--rpg-text)] font-semibold w-8 text-right">
+                  {Math.round(bgmVolume * 100)}%
                 </span>
               </div>
             </div>
