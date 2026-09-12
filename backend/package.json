@@ -4,10 +4,13 @@
   "description": "Core Backend, PostgreSQL Database, Authentication, and Server-Authoritative RPG Progression Engine for Life RPG",
   "type": "module",
   "main": "dist/server.js",
+  "engines": {
+    "node": ">=20.0.0 <23.0.0"
+  },
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "build": "tsc && node -e \"const fs=require('fs'); fs.mkdirSync('dist/db', {recursive:true}); fs.copyFileSync('src/db/schema.sql', 'dist/db/schema.sql');\"",
+    "start": "node --max-old-space-size=384 dist/server.js",
     "seed": "tsx src/db/seed.ts",
     "test": "tsx tests/runTests.ts"
   },

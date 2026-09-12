@@ -30,14 +30,19 @@ class DatabaseManager {
       this.pool = new Pool({
         connectionString: config.databaseUrl,
         ssl: config.nodeEnv === 'production' ? { rejectUnauthorized: false } : undefined,
+        max: 10,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000,
       });
       await this.pool.query('SELECT 1');
       console.log('[DB] Connected successfully to remote PostgreSQL.');
     } else {
-      console.log('[DB] DATABASE_URL not specified. Initializing embedded PostgreSQL (PGlite)...');
+      console.log('[DB] ⚠️ DATABASE_URL not specified.');
+      console.log('[DB] Initializing embedded PostgreSQL (PGlite)...');
+      console.log('[DB] TIP: In production (Render), connect a PostgreSQL database via DATABASE_URL to reduce memory usage (<50MB) and persist data across restarts.');
       const isTest = process.env.NODE_ENV === 'test';
       if (isTest) {
-        this.pglite = new PGlite();
+        this.pglite = new PGlite({ relaxedDurability: true });
         await this.pglite.waitReady;
         console.log('[DB] Embedded PostgreSQL ready in in-memory test mode.');
       } else {
@@ -56,7 +61,7 @@ class DatabaseManager {
           }
         }
         try {
-          this.pglite = new PGlite(dataDir);
+          this.pglite = new PGlite({ dataDir, relaxedDurability: true });
           await this.pglite.waitReady;
         } catch (initErr) {
           console.warn('[DB] Persistent storage recovery required, reinitializing clean store...');
@@ -64,7 +69,7 @@ class DatabaseManager {
             fs.rmSync(dataDir, { recursive: true, force: true });
             fs.mkdirSync(dataDir, { recursive: true });
           } catch (e) {}
-          this.pglite = new PGlite(dataDir);
+          this.pglite = new PGlite({ dataDir, relaxedDurability: true });
           await this.pglite.waitReady;
         }
         console.log(`[DB] Embedded PostgreSQL ready. Persistent storage at: ${dataDir}`);
@@ -76,9 +81,18 @@ class DatabaseManager {
   }
 
   private async applySchema(): Promise<void> {
-    const schemaPath = path.resolve(__dirname, 'schema.sql');
+    let schemaPath = path.resolve(__dirname, 'schema.sql');
     if (!fs.existsSync(schemaPath)) {
-      console.warn(`[DB] schema.sql not found at ${schemaPath}`);
+      schemaPath = path.resolve(process.cwd(), 'dist/db/schema.sql');
+    }
+    if (!fs.existsSync(schemaPath)) {
+      schemaPath = path.resolve(process.cwd(), 'src/db/schema.sql');
+    }
+    if (!fs.existsSync(schemaPath)) {
+      schemaPath = path.resolve(__dirname, '../../src/db/schema.sql');
+    }
+    if (!fs.existsSync(schemaPath)) {
+      console.warn(`[DB] schema.sql not found in standard paths (${schemaPath})`);
       return;
     }
 
